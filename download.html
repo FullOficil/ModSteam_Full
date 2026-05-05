@@ -10,12 +10,26 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   color: white;
+  overflow-x: hidden;
+}
 
-  background:
-    linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
-    url("Fundo.png") no-repeat center center fixed;
+/* VÍDEO DE FUNDO */
+.bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
 
-  background-size: cover;
+/* ESCURECER VÍDEO */
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: -1;
 }
 
 /* HEADER */
@@ -116,7 +130,7 @@ h2 {
   font-size: 14px;
 }
 
-/* INFO BOX */
+/* INFO */
 .info {
   background: rgba(255,255,255,0.05);
   padding: 12px;
@@ -130,16 +144,8 @@ h2 {
   font-size: 14px;
 }
 
-.description h3 {
-  margin-bottom: 5px;
-}
-
 .description ul {
   padding-left: 20px;
-}
-
-.description li {
-  margin-bottom: 5px;
 }
 
 /* BOTÃO */
@@ -165,6 +171,13 @@ h2 {
 </head>
 
 <body>
+
+<!-- VÍDEO DE FUNDO -->
+<video class="bg-video" autoplay muted loop playsinline>
+  <source src="VideoDeFundo.mp4" type="video/mp4">
+</video>
+
+<div class="bg-overlay"></div>
 
 <!-- MENU -->
 <div class="sidebar" id="sidebar">
@@ -204,17 +217,11 @@ h2 {
 
     <div class="description">
       <h3>Descrição</h3>
-      <p>
-        O arquivo compactado (.zip) contém todos os arquivos necessários para rodar o jogo no Android.
-      </p>
-      <p>
-        Dentro do pacote você encontrará:
-      </p>
-
+      <p>O arquivo compactado (.zip) contém tudo para rodar no Android.</p>
       <ul>
         <li>APK do jogo</li>
         <li>Arquivos adicionais</li>
-        <li>Build 41 completa do Project Zomboid</li>
+        <li>Build 41 completa</li>
       </ul>
     </div>
 
