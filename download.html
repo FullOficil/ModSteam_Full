@@ -10,10 +10,13 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   color: white;
-  overflow-x: hidden;
+
+  /* fallback caso vídeo não carregue */
+  background: url("Fundo.png") no-repeat center center fixed;
+  background-size: cover;
 }
 
-/* VÍDEO DE FUNDO */
+/* VÍDEO */
 .bg-video {
   position: fixed;
   top: 0;
@@ -24,7 +27,7 @@ body {
   z-index: -2;
 }
 
-/* ESCURECER VÍDEO */
+/* ESCURECER */
 .bg-overlay {
   position: fixed;
   inset: 0;
@@ -41,7 +44,6 @@ body {
   gap: 10px;
 }
 
-/* MENU BTN */
 .menu-btn {
   font-size: 22px;
   cursor: pointer;
@@ -111,10 +113,8 @@ body {
   backdrop-filter: blur(6px);
 }
 
-/* TEXTOS */
 h2 {
   text-align: center;
-  margin-bottom: 10px;
 }
 
 .subtitle {
@@ -125,9 +125,8 @@ h2 {
 
 .highlight {
   text-align: center;
-  margin-bottom: 20px;
   color: #00e676;
-  font-size: 14px;
+  margin-bottom: 20px;
 }
 
 /* INFO */
@@ -136,14 +135,9 @@ h2 {
   padding: 12px;
   border-radius: 12px;
   margin-bottom: 20px;
-  font-size: 14px;
 }
 
 /* DESCRIÇÃO */
-.description {
-  font-size: 14px;
-}
-
 .description ul {
   padding-left: 20px;
 }
@@ -159,7 +153,6 @@ h2 {
   font-weight: bold;
   text-decoration: none;
   color: black;
-  font-size: 16px;
   transition: 0.2s;
 }
 
@@ -172,8 +165,8 @@ h2 {
 
 <body>
 
-<!-- VÍDEO DE FUNDO -->
-<video class="bg-video" autoplay muted loop playsinline>
+<!-- VÍDEO -->
+<video id="bgVideo" class="bg-video" autoplay muted loop playsinline preload="auto">
   <source src="VideoDeFundo.mp4" type="video/mp4">
 </video>
 
@@ -217,7 +210,7 @@ h2 {
 
     <div class="description">
       <h3>Descrição</h3>
-      <p>O arquivo compactado (.zip) contém tudo para rodar no Android.</p>
+      <p>O arquivo contém tudo para rodar no Android.</p>
       <ul>
         <li>APK do jogo</li>
         <li>Arquivos adicionais</li>
@@ -239,6 +232,20 @@ function toggleMenu(){
   document.getElementById("sidebar").classList.toggle("open");
   document.getElementById("overlay").classList.toggle("show");
 }
+
+/* INICIAR EM 0:20 */
+const video = document.getElementById("bgVideo");
+
+video.addEventListener("loadedmetadata", () => {
+  video.currentTime = 20;
+});
+
+/* LOOP A PARTIR DE 0:20 */
+video.addEventListener("timeupdate", () => {
+  if (video.currentTime >= video.duration - 0.3) {
+    video.currentTime = 20;
+  }
+});
 </script>
 
 </body>
