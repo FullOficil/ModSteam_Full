@@ -12,8 +12,8 @@ body {
   color: white;
 
   background:
-    linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
-    url("Fundo.png") no-repeat center center fixed;
+    linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
+    url("fundo.png") no-repeat center center fixed;
 
   background-size: cover;
 }
@@ -37,8 +37,8 @@ body {
 .sidebar {
   position: fixed;
   top: 0;
-  left: -250px;
-  width: 250px;
+  left: -260px;
+  width: 260px;
   height: 100%;
   background: #111;
   transition: 0.3s;
@@ -58,7 +58,6 @@ body {
   background: #1f1f1f;
 }
 
-/* ITEM ATIVO */
 .active {
   background: #00c853;
   color: black !important;
@@ -85,28 +84,73 @@ body {
 /* CONTEÚDO */
 .content {
   padding: 20px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .box {
-  background: rgba(0,0,0,0.6);
-  padding: 20px;
-  border-radius: 15px;
-  max-width: 400px;
-  margin: auto;
+  background: rgba(0,0,0,0.65);
+  padding: 25px;
+  border-radius: 20px;
+  max-width: 420px;
+  width: 100%;
+  backdrop-filter: blur(6px);
+}
+
+/* TEXTOS */
+h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  text-align: center;
+  opacity: 0.85;
+  margin-bottom: 20px;
+}
+
+.info {
+  background: rgba(255,255,255,0.05);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.description {
+  font-size: 14px;
+}
+
+.description h3 {
+  margin-bottom: 5px;
+}
+
+.description ul {
+  padding-left: 20px;
+}
+
+.description li {
+  margin-bottom: 5px;
 }
 
 /* BOTÃO */
 .download-btn {
-  display: inline-block;
-  margin-top: 15px;
-  padding: 12px;
-  width: 100%;
-  border-radius: 20px;
+  display: block;
+  margin-top: 25px;
+  padding: 15px;
+  text-align: center;
+  border-radius: 30px;
   background: #00c853;
   font-weight: bold;
   text-decoration: none;
   color: black;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.download-btn:hover {
+  background: #00e676;
+  transform: scale(1.03);
 }
 </style>
 </head>
@@ -116,7 +160,7 @@ body {
 <!-- MENU -->
 <div class="sidebar" id="sidebar">
   <a href="index.html">Mods Project Zomboid</a>
-  <a class="active">Download Project Zomboid</a>
+  <a class="active">Download</a>
   <a href="#">Servidores BR</a>
   <a href="#">Servidores USA</a>
   <a href="#">Discord</a>
@@ -133,8 +177,33 @@ body {
 <!-- CONTEÚDO -->
 <div class="content">
   <div class="box">
+
     <h2>Download Project Zomboid</h2>
-    <p>Baixe o jogo para jogar com mods.</p>
+
+    <p class="subtitle">
+      Project Zomboid 100% adaptado para Android
+    </p>
+
+    <div class="info">
+      <p><strong>Versão:</strong> Build 41</p>
+      <p><strong>Formato:</strong> Arquivo .ZIP</p>
+    </div>
+
+    <div class="description">
+      <h3>Descrição</h3>
+      <p>
+        O arquivo compactado (.zip) contém todos os arquivos necessários para rodar o jogo no Android.
+      </p>
+      <p>
+        Dentro do pacote você encontrará:
+      </p>
+
+      <ul>
+        <li>APK do jogo</li>
+        <li>Arquivos adicionais</li>
+        <li>Build 41 completa do Project Zomboid</li>
+      </ul>
+    </div>
 
     <a class="download-btn"
        href="https://www.mediafire.com/file/fqtx0fidmlaori2/Project+zomboid+mobile.zip/file"
