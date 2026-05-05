@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ModSteam Pro</title>
+
+<style>
+body { margin: 0; font-family: Arial; background: #0b0b0b; color: white; }
+
+/* HEADER */
+.header {
+  padding: 15px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-btn {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* MENU */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background: #111;
+  transition: 0.3s;
+  padding-top: 20px;
+  z-index: 1000;
+}
+
+.sidebar a {
+  display: block;
+  padding: 15px;
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid #222;
+}
+
+/* ITEM ATIVO */
+.sidebar a.active {
+  background: #00c853;
+  color: black;
+  font-weight: bold;
+}
+
+.sidebar a:hover {
+  background: #1f1f1f;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 999;
+}
+
+.overlay.show {
+  display: block;
+}
+
+.search { padding: 10px; }
+.search input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background: #1f1f1f;
+  color: white;
+}
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 10px; }
+.horizontal { display: flex; overflow-x: auto; gap: 12px; padding: 10px; }
+.horizontal .card { min-width: 140px; }
+
+.card { background: #151515; border-radius: 12px; overflow: hidden; cursor: pointer; height: 210px; }
+
+.card-img { position: relative; width: 100%; height: 140px; background: #222; }
+.card-img img { width: 100%; height: 100%; object-fit: cover; display: none; }
+
+.loader {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 26px; height: 26px;
+  border: 3px solid #333;
+  border-top: 3px solid #00c853;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.card-info { padding: 8px; }
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-meta {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+.section-title {
+  padding: 10px;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #000;
+  overflow-y: auto;
+  z-index: 999;
+  padding: 15px;
+}
+
+.close {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #1f1f1f;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.gallery {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-top: 15px;
+}
+
+.gallery-item {
+  position: relative;
+  min-width: 180px;
+  height: 120px;
+  background: #222;
+  border-radius: 12px;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- MENU -->
+<div class="sidebar" id="sidebar">
+  <a href="index.html" class="active">Mods Project Zomboid</a>
+  <a href="download.html">Download Project Zomboid</a>
+  <a href="#">Servidores BR</a>
+  <a href="#">Servidores USA</a>
+  <a href="#">Discord</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  ModSteam Pro
+</div>
+
+<div class="search">
+  <input type="text" id="busca" placeholder="Pesquisar mods...">
+</div>
+
+<div id="sections"></div>
+
+<div class="modal" id="modal">
+  <div class="close" onclick="fechar()">✖</div>
+  <div id="content"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_AUTH_DOMAIN",
+  databaseURL: "https://dayzozmbi-server-default-rtdb.firebaseio.com",
+  projectId: "dayzozmbi-server",
+  storageBucket: "dayzozmbi-server.firebasestorage.app"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let mods = [];
+
+window.toggleMenu = ()=>{
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("show");
+};
+
+// RESTO DO SCRIPT IGUAL (não mexi em nada)
+
+function render(){
+  const container = document.getElementById("sections");
+  container.innerHTML = "";
+
+  const search = document.getElementById("busca").value.toLowerCase();
+
+  const filtered = mods.filter(m =>
+    (m.nome||"").toLowerCase().includes(search)
+  );
+
+  const sorted = [...filtered]
+    .sort((a,b)=>(b.downloads||0)-(a.downloads||0));
+
+  const top4 = sorted.slice(0,4);
+  if(top4.length){
+    container.appendChild(section("🔥 Mais baixados", top4, true));
+  }
+
+  const rest = sorted.slice(4);
+  if(rest.length){
+    container.appendChild(section("📦 Mods", rest, false));
+  }
+}
+
+function section(title,data,isHorizontal){
+  const wrap = document.createElement("div");
+
+  const t = document.createElement("div");
+  t.className = "section-title";
+  t.innerText = title;
+
+  const grid = document.createElement("div");
+  grid.className = isHorizontal ? "horizontal" : "grid";
+
+  data.forEach(m=>{
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <div class="card-img">
+        <div class="loader"></div>
+        <img src="${m.iconURL}">
+      </div>
+
+      <div class="card-info">
+        <div class="card-title">${m.nome}</div>
+        <div class="card-meta">Versão ${m.versao||"N/A"}</div>
+        <div class="card-meta">📥 ${m.downloads||0}</div>
+      </div>
+    `;
+
+    const img = div.querySelector("img");
+    const loader = div.querySelector(".loader");
+
+    img.onload = ()=>{
+      loader.style.display="none";
+      img.style.display="block";
+    };
+
+    div.onclick = ()=>open(m);
+    grid.appendChild(div);
+  });
+
+  wrap.appendChild(t);
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function formatarData(timestamp){
+  if(!timestamp) return "N/A";
+  return new Date(timestamp).toLocaleDateString("pt-BR");
+}
+
+function jaBaixado(nome){
+  return localStorage.getItem("baixado_"+nome) === "true";
+}
+
+function marcarBaixado(nome){
+  localStorage.setItem("baixado_"+nome, "true");
+}
+
+window.baixarArquivo = (url,nome,id)=>{
+  if(!url){ alert("Erro"); return; }
+
+  const btn = document.getElementById("btnDownload");
+  const progress = document.getElementById("progressBar");
+
+  marcarBaixado(nome);
+
+  runTransaction(ref(db,"mods/"+id+"/downloads"), val=>{
+    return (val||0)+1;
+  });
+
+  progress.style.display = "block";
+  progress.value = 0;
+
+  let p = 0;
+  const timer = setInterval(()=>{
+    p += Math.random()*20;
+    if(p>=90){ p=90; clearInterval(timer); }
+    progress.value = p;
+  },200);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nome + ".zip";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(()=>{
+    progress.value = 100;
+
+    btn.innerText = "⬇ Baixar novamente";
+    btn.style.background = "#00c853";
+
+    setTimeout(()=>{
+      progress.style.display="none";
+    },800);
+
+  },1500);
+};
+
+function open(m){
+
+  document.getElementById("modal").style.display="block";
+
+  document.getElementById("content").innerHTML = `
+    <div style="display:flex;gap:15px;align-items:center;">
+      <img src="${m.iconURL}" style="width:90px;height:90px;border-radius:20px;">
+      <div>
+        <h2 style="margin:0;">${m.nome}</h2>
+        <div style="color:#aaa;font-size:12px;">
+          Versão ${m.versao||"N/A"} • ${m.categoria||""}
+        </div>
+        <div style="color:#aaa;font-size:12px;margin-top:5px;">
+          📅 Publicado: ${formatarData(m.data)}
+        </div>
+        <div style="color:#aaa;font-size:12px;">
+          📥 Downloads: ${m.downloads||0}
+        </div>
+      </div>
+    </div>
+
+    <button id="btnDownload"
+    onclick="baixarArquivo('${m.zipURL}','${m.nome}','${m.id}')"
+    style="margin-top:15px;width:100%;padding:12px;border:none;border-radius:20px;background:#00c853;font-weight:bold;">
+      ⬇ Baixar Agora
+    </button>
+
+    <progress id="progressBar" value="0" max="100" style="width:100%;margin-top:10px;display:none;"></progress>
+
+    <div class="gallery">
+      ${(m.imagens||[]).map(i=>`
+        <div class="gallery-item">
+          <div class="loader"></div>
+          <img src="${i}">
+        </div>
+      `).join("")}
+    </div>
+
+    <p style="color:#aaa;margin-top:15px;">${m.descricao}</p>
+  `;
+
+  document.querySelectorAll(".gallery-item img").forEach(img=>{
+    const loader = img.previousElementSibling;
+    img.onload = ()=>{
+      loader.style.display="none";
+      img.style.display="block";
+    };
+  });
+}
+
+window.fechar = ()=> document.getElementById("modal").style.display="none";
+
+document.getElementById("busca").addEventListener("input",render);
+
+onValue(ref(db,"mods"),snap=>{
+  mods=[];
+  snap.forEach(i=>{
+    let data = i.val();
+    data.id = i.key;
+    mods.push(data);
+  });
+  render();
+});
+</script>
+
+</body>
+</html>

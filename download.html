@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Download Project Zomboid</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  color: white;
+
+  background:
+    linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+    url("Assets/Imagens/Fundo.png") no-repeat center center fixed;
+
+  background-size: cover;
+}
+
+/* HEADER */
+.header {
+  padding: 15px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* MENU BTN */
+.menu-btn {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background: #111;
+  transition: 0.3s;
+  padding-top: 20px;
+  z-index: 1000;
+}
+
+.sidebar a {
+  display: block;
+  padding: 15px;
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid #222;
+}
+
+.sidebar a:hover {
+  background: #1f1f1f;
+}
+
+/* ITEM ATIVO */
+.active {
+  background: #00c853;
+  color: black !important;
+  font-weight: bold;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+/* OVERLAY */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 999;
+}
+
+.overlay.show {
+  display: block;
+}
+
+/* CONTEÚDO */
+.content {
+  padding: 20px;
+  text-align: center;
+}
+
+.box {
+  background: rgba(0,0,0,0.6);
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 400px;
+  margin: auto;
+}
+
+/* BOTÃO */
+.download-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px;
+  width: 100%;
+  border-radius: 20px;
+  background: #00c853;
+  font-weight: bold;
+  text-decoration: none;
+  color: black;
+}
+</style>
+</head>
+
+<body>
+
+<!-- MENU -->
+<div class="sidebar" id="sidebar">
+  <a href="index.html">Mods Project Zomboid</a>
+  <a class="active">Download Project Zomboid</a>
+  <a href="#">Servidores BR</a>
+  <a href="#">Servidores USA</a>
+  <a href="#">Discord</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  Download
+</div>
+
+<!-- CONTEÚDO -->
+<div class="content">
+  <div class="box">
+    <h2>Download Project Zomboid</h2>
+    <p>Baixe o jogo para jogar com mods.</p>
+
+    <!-- BOTÃO COM MEDIAFIRE -->
+    <a class="download-btn"
+       href="https://www.mediafire.com/file/fqtx0fidmlaori2/Project+zomboid+mobile.zip/file"
+       target="_blank">
+       ⬇ Baixar Agora
+    </a>
+
+  </div>
+</div>
+
+<script>
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("show");
+}
+</script>
+
+</body>
+</html>
