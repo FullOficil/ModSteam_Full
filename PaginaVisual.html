@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualizar Mod</title>
+
+<style>
+body { margin: 0; font-family: Arial; background: #0b0b0b; color: white; }
+
+/* HEADER */
+.header {
+  padding: 15px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-btn {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* MENU */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background: #111;
+  transition: 0.3s;
+  padding-top: 20px;
+  z-index: 1000;
+}
+
+.sidebar a {
+  display: block;
+  padding: 15px;
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid #222;
+}
+
+.sidebar a:hover { background: #1f1f1f; }
+.sidebar.open { left: 0; }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 999;
+}
+
+.overlay.show { display: block; }
+
+/* CONTEÚDO */
+.content { padding: 15px; }
+
+/* TOPO */
+.top {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.top img {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+.top-info h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.meta {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 3px;
+}
+
+/* BOTÕES */
+.download-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 25px;
+  background: #00c853;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.share-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 25px;
+  background: #2196f3;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* GALERIA */
+.gallery {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.gallery-item {
+  position: relative;
+  min-width: 180px;
+  height: 140px;
+  border-radius: 12px;
+  background: #222;
+  overflow: hidden;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* DESCRIÇÃO */
+.desc {
+  margin-top: 20px;
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* 🔥 SKELETON */
+.skeleton {
+  background: linear-gradient(90deg,#1f1f1f 25%,#2a2a2a 37%,#1f1f1f 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* FADE IN */
+.fade-img {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.fade-img.loaded {
+  opacity: 1;
+}
+
+/* loader spinner */
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  border: 3px solid #333;
+  border-top: 3px solid #00c853;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- MENU -->
+<div class="sidebar" id="sidebar">
+  <a href="index.html">Mods Project Zomboid</a>
+  <a href="download.html">Download Project Zomboid</a>
+  <a href="#">Servidores BR</a>
+  <a href="#">Servidores USA</a>
+  <a href="#">Discord</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="header">
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  Visualizar Mod
+</div>
+
+<div class="content" id="content">Carregando...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const app = initializeApp({
+  databaseURL: "https://dayzozmbi-server-default-rtdb.firebaseio.com"
+});
+
+const db = getDatabase(app);
+
+/* MENU */
+window.toggleMenu = ()=>{
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("show");
+};
+
+/* IMAGE LOADER */
+function setupImage(img, loader) {
+  img.onload = () => {
+    loader.style.display = "none";
+    img.classList.add("loaded");
+  };
+}
+
+/* ID */
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+if(!id){
+  document.getElementById("content").innerHTML = "Mod não encontrado.";
+}
+
+/* FETCH */
+const snap = await get(ref(db,"mods/"+id));
+
+if(!snap.exists()){
+  document.getElementById("content").innerHTML = "Mod não encontrado.";
+}
+
+const m = snap.val();
+
+const dataFormatada = m.data
+  ? new Date(m.data).toLocaleDateString("pt-BR")
+  : "N/A";
+
+/* RENDER */
+document.getElementById("content").innerHTML = `
+  <div class="top">
+    <img src="${m.iconURL}">
+    <div class="top-info">
+      <h2>${m.nome}</h2>
+      <div class="meta">Versão ${m.versao || "N/A"}</div>
+      <div class="meta">📥 ${m.downloads || 0} downloads</div>
+      <div class="meta">📦 ${m.tamanhoMB || "?"} MB</div>
+      <div class="meta">📅 ${dataFormatada}</div>
+    </div>
+  </div>
+
+  <button class="download-btn" onclick="baixar()">⬇ Baixar</button>
+  <button class="share-btn" onclick="compartilhar()">🔗 Compartilhar</button>
+
+  <div class="gallery">
+    ${(m.imagens || []).map(i => `
+      <div class="gallery-item">
+        <div class="loader"></div>
+        <img class="fade-img" src="${i}">
+      </div>
+    `).join("")}
+  </div>
+
+  <div class="desc">${m.descricao || ""}</div>
+`;
+
+/* DOWNLOAD */
+window.baixar = ()=>{
+  runTransaction(ref(db,"mods/"+id+"/downloads"), val=>{
+    return (val||0)+1;
+  });
+
+  const a = document.createElement("a");
+  a.href = m.zipURL;
+  a.click();
+};
+
+/* SHARE */
+window.compartilhar = () => {
+  const url = window.location.href;
+
+  if (navigator.share) {
+    navigator.share({
+      title: m.nome,
+      text: "Veja esse mod!",
+      url: url
+    });
+  } else {
+    const wpp = "https://wa.me/?text=" + encodeURIComponent(m.nome + " " + url);
+    window.open(wpp, "_blank");
+  }
+};
+
+/* APPLY IMAGE EFFECTS */
+setTimeout(() => {
+  document.querySelectorAll(".gallery-item").forEach(el => {
+    const img = el.querySelector("img");
+    const loader = el.querySelector(".loader");
+    setupImage(img, loader);
+  });
+}, 300);
+
+</script>
+
+</body>
+</html>
