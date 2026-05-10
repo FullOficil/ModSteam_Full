@@ -8,12 +8,15 @@ content="width=device-width, initial-scale=1.0">
 <title>Minhas Publicações</title>
 
 <style>
+
 body{
   margin:0;
   font-family:Arial;
   background:#0b0b0b;
   color:white;
 }
+
+/* HEADER */
 
 .header{
   padding:15px;
@@ -28,9 +31,13 @@ body{
   cursor:pointer;
 }
 
+/* CONTAINER */
+
 .container{
   padding:12px;
 }
+
+/* GRID */
 
 .grid{
   display:grid;
@@ -39,11 +46,23 @@ body{
   gap:12px;
 }
 
+/* CARD */
+
 .card{
   background:#151515;
   border-radius:14px;
   overflow:hidden;
   cursor:pointer;
+  transition:0.2s;
+  position:relative;
+}
+
+.card:hover{
+  transform:scale(1.02);
+}
+
+.card-top{
+  position:relative;
 }
 
 .card img{
@@ -51,6 +70,42 @@ body{
   height:150px;
   object-fit:cover;
 }
+
+/* BOTÕES */
+
+.card-actions{
+  position:absolute;
+  top:8px;
+  right:8px;
+  display:flex;
+  gap:6px;
+}
+
+.edit-btn,
+.delete-btn{
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:16px;
+  backdrop-filter:blur(5px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.edit-btn{
+  background:#00c853;
+  color:black;
+}
+
+.delete-btn{
+  background:#ff3b3b;
+  color:white;
+}
+
+/* INFO */
 
 .card-info{
   padding:10px;
@@ -74,6 +129,7 @@ body{
 }
 
 /* FAB */
+
 .fab{
   position:fixed;
   right:20px;
@@ -89,6 +145,7 @@ body{
 }
 
 /* MODAL */
+
 .modal{
   position:fixed;
   inset:0;
@@ -148,6 +205,7 @@ body{
   background:#00c853;
   color:black;
 }
+
 </style>
 </head>
 
@@ -188,6 +246,7 @@ onclick="abrirUpload()">
 </button>
 
 <!-- MODAL -->
+
 <div class="modal"
 id="solicitarModal">
 
@@ -198,7 +257,9 @@ id="solicitarModal">
     </h3>
 
     <p style="color:#aaa;font-size:13px;">
+
       Explique porque deseja publicar mods.
+
     </p>
 
     <textarea
@@ -237,7 +298,8 @@ import {
   ref,
   onValue,
   push,
-  get
+  get,
+  remove
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -260,6 +322,7 @@ const firebaseConfig = {
 
   appId:
   "1:221905253103:android:fc1bc06782cf5735c4611a"
+
 };
 
 const app =
@@ -267,6 +330,8 @@ initializeApp(firebaseConfig);
 
 const db =
 getDatabase(app);
+
+/* USUÁRIO */
 
 const usuario =
 JSON.parse(
@@ -284,9 +349,11 @@ document.getElementById("nickUser")
 .innerText = usuario.nick;
 
 /* ABRIR UPLOAD */
+
 window.abrirUpload = async ()=>{
 
   /* ADM */
+
   if(usuario.nick === "ADM"){
 
     location.href =
@@ -296,7 +363,8 @@ window.abrirUpload = async ()=>{
 
   }
 
-  /* VERIFICAR FIREBASE */
+  /* VERIFICAR */
+
   const snap = await get(
     ref(
       db,
@@ -308,6 +376,7 @@ window.abrirUpload = async ()=>{
   snap.val() === true;
 
   /* NÃO AUTORIZADO */
+
   if(!autorizado){
 
     document.getElementById(
@@ -319,12 +388,14 @@ window.abrirUpload = async ()=>{
   }
 
   /* AUTORIZADO */
+
   location.href =
   "Uplods.html";
 
 };
 
-/* MODAL */
+/* FECHAR MODAL */
+
 window.fecharModal = ()=>{
 
   document.getElementById(
@@ -333,7 +404,8 @@ window.fecharModal = ()=>{
 
 };
 
-/* SOLICITAÇÃO */
+/* ENVIAR SOLICITAÇÃO */
+
 window.enviarSolicitacao =
 async ()=>{
 
@@ -376,12 +448,15 @@ async ()=>{
 
 };
 
-/* MODS */
+/* GRID */
+
 const grid =
 document.getElementById("grid");
 
 const empty =
 document.getElementById("empty");
+
+/* LISTAR MODS */
 
 onValue(ref(db,"mods"),snap=>{
 
@@ -393,12 +468,16 @@ onValue(ref(db,"mods"),snap=>{
 
     const m = i.val();
 
+    /* MOSTRAR SOMENTE MODS DO USUÁRIO */
+
     if(
       usuario.nick !== "ADM"
       &&
       m.autorNick !== usuario.nick
     ){
+
       return;
+
     }
 
     encontrou = true;
@@ -409,7 +488,24 @@ onValue(ref(db,"mods"),snap=>{
     card.className = "card";
 
     card.innerHTML = `
-      <img src="${m.iconURL}">
+
+      <div class="card-top">
+
+        <img src="${m.iconURL}">
+
+        <div class="card-actions">
+
+          <button class="edit-btn">
+            ✏️
+          </button>
+
+          <button class="delete-btn">
+            🗑️
+          </button>
+
+        </div>
+
+      </div>
 
       <div class="card-info">
 
@@ -418,17 +514,63 @@ onValue(ref(db,"mods"),snap=>{
         </div>
 
         <div class="card-meta">
-          📥 ${m.downloads||0}
+          📥 ${m.downloads || 0}
         </div>
 
       </div>
+
     `;
+
+    /* ABRIR MOD */
 
     card.onclick = ()=>{
 
       location.href =
       "PaginaVisual.html?id="
       + i.key;
+
+    };
+
+    /* EDITAR */
+
+    card.querySelector(".edit-btn")
+    .onclick = (e)=>{
+
+      e.stopPropagation();
+
+      location.href =
+      "EditarMod.html?id="
+      + i.key;
+
+    };
+
+    /* EXCLUIR */
+
+    card.querySelector(".delete-btn")
+    .onclick = async (e)=>{
+
+      e.stopPropagation();
+
+      const confirmar =
+      confirm(
+        "Deseja excluir esse mod?"
+      );
+
+      if(!confirmar) return;
+
+      try{
+
+        await remove(
+          ref(db,"mods/" + i.key)
+        );
+
+        alert("Mod excluído!");
+
+      }catch(err){
+
+        alert(err.message);
+
+      }
 
     };
 
