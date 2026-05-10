@@ -2,150 +2,536 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Editar Mod</title>
 
 <style>
+
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
   font-family:Arial;
-  background:#0f0f0f;
   color:white;
+  background:#0b0b0b;
+  overflow-x:hidden;
 }
 
-.container{
-  max-width:800px;
-  margin:auto;
-  padding:20px;
+/* FUNDO */
+.bg{
+  position:fixed;
+  inset:0;
+  background:
+  linear-gradient(
+    rgba(0,0,0,0.80),
+    rgba(0,0,0,0.88)
+  ),
+  url("Fundo.png")
+  center/cover no-repeat;
+  z-index:-2;
 }
 
+/* HEADER */
 .header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  backdrop-filter:blur(10px);
+  background:rgba(0,0,0,0.45);
+
   display:flex;
   align-items:center;
-  gap:10px;
-  margin-bottom:20px;
+  justify-content:space-between;
+
+  padding:16px 18px;
+
+  border-bottom:
+  1px solid rgba(255,255,255,0.06);
+}
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
 .back{
-  font-size:24px;
-  cursor:pointer;
-}
-
-h1{
-  font-size:20px;
-  color:#00c853;
-}
-
-.card{
-  background:#1c1c1c;
-  padding:15px;
+  width:42px;
+  height:42px;
   border-radius:12px;
+  background:#1f1f1f;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.back:hover{
+  background:#2c2c2c;
+}
+
+.header h1{
+  margin:0;
+  font-size:20px;
+  color:#00e676;
+}
+
+.status{
+  background:#00c853;
+  color:black;
+  padding:8px 14px;
+  border-radius:30px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+/* CONTAINER */
+.container{
+  max-width:950px;
+  margin:auto;
+  padding:22px;
+}
+
+/* CARDS */
+.card{
+  background:
+  linear-gradient(
+    180deg,
+    rgba(28,28,28,0.95),
+    rgba(18,18,18,0.95)
+  );
+
+  border:
+  1px solid rgba(255,255,255,0.05);
+
+  border-radius:22px;
+
+  padding:20px;
+
+  margin-bottom:18px;
+
+  box-shadow:
+  0 0 30px rgba(0,0,0,0.35);
+}
+
+.card-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  font-size:18px;
+  font-weight:bold;
+
+  margin-bottom:16px;
+}
+
+.card-sub{
+  color:#9e9e9e;
+  font-size:13px;
+  margin-top:-8px;
   margin-bottom:15px;
+}
+
+/* INPUTS */
+.input-group{
+  margin-bottom:15px;
+}
+
+.label{
+  font-size:13px;
+  color:#a8a8a8;
+  margin-bottom:8px;
 }
 
 input,
 textarea,
 select{
   width:100%;
-  margin-top:8px;
-  padding:12px;
   border:none;
-  border-radius:8px;
-  background:#2a2a2a;
-  color:white;
   outline:none;
-  box-sizing:border-box;
+
+  background:#262626;
+
+  color:white;
+
+  padding:15px;
+
+  border-radius:14px;
+
+  font-size:14px;
+
+  transition:0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+  background:#303030;
+  box-shadow:
+  0 0 0 2px #00c85355;
 }
 
 textarea{
-  height:100px;
+  min-height:120px;
   resize:none;
 }
 
-button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:10px;
+/* FILE BOX */
+.file-box{
+  border:
+  2px dashed rgba(255,255,255,0.08);
+
+  background:#181818;
+
+  border-radius:18px;
+
+  padding:20px;
+
+  text-align:center;
+
+  transition:0.2s;
 }
 
-.btn-save{
+.file-box:hover{
+  border-color:#00c853;
+  background:#1f1f1f;
+}
+
+.file-icon{
+  font-size:38px;
+  margin-bottom:10px;
+}
+
+.file-title{
+  font-size:16px;
+  font-weight:bold;
+}
+
+.file-sub{
+  color:#a0a0a0;
+  font-size:13px;
+  margin-top:6px;
+  margin-bottom:15px;
+}
+
+.file-input{
+  display:none;
+}
+
+.file-btn{
+  display:inline-block;
   background:#00c853;
   color:black;
+  padding:12px 18px;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
+/* PREVIEW */
 .preview{
   display:flex;
-  gap:10px;
+  gap:12px;
   overflow-x:auto;
-  margin-top:10px;
+  margin-top:15px;
+  padding-bottom:4px;
 }
 
 .preview img{
-  width:120px;
-  height:90px;
+  width:140px;
+  height:100px;
   object-fit:cover;
-  border-radius:10px;
+  border-radius:14px;
   background:#222;
+  flex-shrink:0;
+  border:2px solid #2d2d2d;
 }
 
-.info{
-  color:#aaa;
-  font-size:13px;
-  margin-top:8px;
+/* BOTÃO */
+.save-area{
+  position:sticky;
+  bottom:0;
+  padding-top:10px;
 }
+
+.btn-save{
+  width:100%;
+  border:none;
+  padding:18px;
+  border-radius:18px;
+
+  background:
+  linear-gradient(
+    90deg,
+    #00c853,
+    #00e676
+  );
+
+  color:black;
+
+  font-size:16px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:0.2s;
+}
+
+.btn-save:hover{
+  transform:scale(1.01);
+}
+
+/* MODAL LOADING */
+.loading-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.82);
+
+  display:none;
+  align-items:center;
+  justify-content:center;
+
+  z-index:9999;
+}
+
+.loading-box{
+  width:90%;
+  max-width:360px;
+
+  background:#161616;
+
+  border-radius:24px;
+
+  padding:30px 24px;
+
+  text-align:center;
+
+  border:
+  1px solid rgba(255,255,255,0.08);
+}
+
+.loader{
+  width:70px;
+  height:70px;
+
+  border-radius:50%;
+
+  border:6px solid #2a2a2a;
+  border-top:6px solid #00e676;
+
+  margin:auto;
+  margin-bottom:20px;
+
+  animation:giro 1s linear infinite;
+}
+
+@keyframes giro{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+.loading-title{
+  font-size:20px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.loading-status{
+  color:#bdbdbd;
+  font-size:14px;
+  min-height:22px;
+}
+
+.progress{
+  width:100%;
+  height:10px;
+  background:#262626;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:18px;
+}
+
+.progress-bar{
+  width:0%;
+  height:100%;
+  background:#00e676;
+  transition:0.4s;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="bg"></div>
 
-  <div class="header">
-    <div class="back" onclick="voltar()">←</div>
-    <h1>✏️ Editar Mod</h1>
+<!-- LOADING -->
+<div class="loading-modal"
+id="loadingModal">
+
+  <div class="loading-box">
+
+    <div class="loader"></div>
+
+    <div class="loading-title">
+      Atualizando Mod
+    </div>
+
+    <div class="loading-status"
+    id="loadingText">
+
+      Preparando arquivos...
+
+    </div>
+
+    <div class="progress">
+
+      <div class="progress-bar"
+      id="progressBar"></div>
+
+    </div>
+
   </div>
 
-  <!-- INFORMAÇÕES -->
+</div>
+
+<!-- HEADER -->
+<div class="header">
+
+  <div class="header-left">
+
+    <div class="back"
+    onclick="voltar()">
+
+      ←
+
+    </div>
+
+    <h1>Editar Mod</h1>
+
+  </div>
+
+  <div class="status">
+
+    ONLINE
+
+  </div>
+
+</div>
+
+<!-- CONTAINER -->
+<div class="container">
+
+  <!-- INFO -->
   <div class="card">
 
-    <h3>Informações</h3>
+    <div class="card-title">
+      📝 Informações do Mod
+    </div>
 
-    <input id="nome" placeholder="Nome do Mod">
+    <div class="input-group">
 
-    <textarea id="descricao"
-    placeholder="Descrição"></textarea>
+      <div class="label">
+        Nome do Mod
+      </div>
 
-    <input id="versao"
-    placeholder="Versão">
+      <input
+      id="nome"
+      placeholder="Digite o nome do mod">
 
-    <select id="categoria">
+    </div>
 
-      <option>Roupas</option>
-      <option>Armas</option>
-      <option>Veiculos</option>
-      <option>Construções</option>
-      <option>Variados</option>
+    <div class="input-group">
 
-    </select>
+      <div class="label">
+        Descrição
+      </div>
+
+      <textarea
+      id="descricao"
+      placeholder="Descreva o mod..."></textarea>
+
+    </div>
+
+    <div class="input-group">
+
+      <div class="label">
+        Versão
+      </div>
+
+      <input
+      id="versao"
+      placeholder="Ex: Build 41">
+
+    </div>
+
+    <div class="input-group">
+
+      <div class="label">
+        Categoria
+      </div>
+
+      <select id="categoria">
+
+        <option>Roupas</option>
+        <option>Armas</option>
+        <option>Veiculos</option>
+        <option>Construções</option>
+        <option>Variados</option>
+
+      </select>
+
+    </div>
 
   </div>
 
   <!-- ZIP -->
   <div class="card">
 
-    <h3>📦 Novo Arquivo ZIP</h3>
+    <div class="card-title">
+      📦 Arquivo ZIP
+    </div>
 
-    <input type="file"
-    id="zip"
-    accept=".zip">
+    <div class="card-sub">
+      Se não enviar outro ZIP,
+      o atual continuará.
+    </div>
 
-    <div class="info">
-      Se não selecionar outro ZIP,
-      o antigo continuará.
+    <div class="file-box">
+
+      <div class="file-icon">
+        📁
+      </div>
+
+      <div class="file-title">
+        Novo Arquivo ZIP
+      </div>
+
+      <div class="file-sub">
+        Selecione o arquivo principal do mod
+      </div>
+
+      <label
+      class="file-btn"
+      for="zip">
+
+        Escolher ZIP
+
+      </label>
+
+      <input
+      class="file-input"
+      type="file"
+      id="zip"
+      accept=".zip">
+
     </div>
 
   </div>
@@ -153,14 +539,48 @@ button{
   <!-- ÍCONE -->
   <div class="card">
 
-    <h3>🖼️ Novo Ícone</h3>
+    <div class="card-title">
+      🖼️ Ícone do Mod
+    </div>
 
-    <input type="file"
-    id="icone"
-    accept="image/*">
+    <div class="card-sub">
+      Atualize a capa principal do mod
+    </div>
+
+    <div class="file-box">
+
+      <div class="file-icon">
+        🎨
+      </div>
+
+      <div class="file-title">
+        Novo Ícone
+      </div>
+
+      <div class="file-sub">
+        Imagem usada como capa do mod
+      </div>
+
+      <label
+      class="file-btn"
+      for="icone">
+
+        Escolher Ícone
+
+      </label>
+
+      <input
+      class="file-input"
+      type="file"
+      id="icone"
+      accept="image/*">
+
+    </div>
 
     <div class="preview">
+
       <img id="iconPreview">
+
     </div>
 
   </div>
@@ -168,16 +588,43 @@ button{
   <!-- IMAGENS -->
   <div class="card">
 
-    <h3>🖼️ Novas Imagens</h3>
+    <div class="card-title">
+      🖼️ Screenshots
+    </div>
 
-    <input type="file"
-    id="imagens"
-    multiple
-    accept="image/*">
+    <div class="card-sub">
+      Até 5 imagens do mod
+    </div>
 
-    <div class="info">
-      Se enviar novas imagens,
-      as antigas serão substituídas.
+    <div class="file-box">
+
+      <div class="file-icon">
+        🖼️
+      </div>
+
+      <div class="file-title">
+        Novas Imagens
+      </div>
+
+      <div class="file-sub">
+        As antigas serão substituídas
+      </div>
+
+      <label
+      class="file-btn"
+      for="imagens">
+
+        Escolher Imagens
+
+      </label>
+
+      <input
+      class="file-input"
+      type="file"
+      id="imagens"
+      multiple
+      accept="image/*">
+
     </div>
 
     <div class="preview"
@@ -186,9 +633,10 @@ button{
   </div>
 
   <!-- SALVAR -->
-  <div class="card">
+  <div class="save-area">
 
-    <button class="btn-save"
+    <button
+    class="btn-save"
     id="saveBtn">
 
       💾 Salvar Alterações
@@ -251,7 +699,7 @@ getDatabase(app);
 const storage =
 getStorage(app);
 
-/* USUÁRIO */
+/* USER */
 const usuario =
 JSON.parse(
 localStorage.getItem("usuarioModSteam")
@@ -261,18 +709,17 @@ if(!usuario){
 
   alert("Faça login!");
 
-  window.location.href =
+  location.href =
   "Login.html";
 
 }
 
-/* ADM */
 const isADM =
 usuario.nick === "ADM";
 
-/* ID MOD */
+/* ID */
 const params =
-new URLSearchParams(window.location.search);
+new URLSearchParams(location.search);
 
 const id =
 params.get("id");
@@ -285,11 +732,9 @@ if(!id){
 
 }
 
-/* REFERÊNCIA */
 const modRef =
 dbRef(db,"mods/"+id);
 
-/* CARREGAR MOD */
 const snap =
 await get(modRef);
 
@@ -318,26 +763,27 @@ if(
 }
 
 /* PREENCHER */
-document.getElementById("nome")
-.value = mod.nome || "";
+nome.value =
+mod.nome || "";
 
-document.getElementById("descricao")
-.value = mod.descricao || "";
+descricao.value =
+mod.descricao || "";
 
-document.getElementById("versao")
-.value = mod.versao || "";
+versao.value =
+mod.versao || "";
 
-document.getElementById("categoria")
-.value = mod.categoria || "Variados";
+categoria.value =
+mod.categoria || "Variados";
 
-document.getElementById("iconPreview")
-.src = mod.iconURL;
+iconPreview.src =
+mod.iconURL;
 
 /* IMAGENS */
 const imgsPreview =
 document.getElementById("imgsPreview");
 
-(mod.imagens || []).forEach(img=>{
+(mod.imagens || [])
+.forEach(img=>{
 
   const image =
   document.createElement("img");
@@ -351,37 +797,110 @@ document.getElementById("imgsPreview");
 /* VOLTAR */
 window.voltar = ()=>{
 
-  window.location.href =
+  location.href =
   "MinhasPublicacoes.html";
 
 };
 
+/* LOADING */
+const loadingModal =
+document.getElementById(
+"loadingModal"
+);
+
+const loadingText =
+document.getElementById(
+"loadingText"
+);
+
+const progressBar =
+document.getElementById(
+"progressBar"
+);
+
+function abrirLoading(){
+
+  loadingModal.style.display =
+  "flex";
+
+}
+
+function fecharLoading(){
+
+  loadingModal.style.display =
+  "none";
+
+}
+
+function setLoading(texto,porcentagem){
+
+  loadingText.innerText =
+  texto;
+
+  progressBar.style.width =
+  porcentagem + "%";
+
+}
+
+/* PREVIEW NOVO ÍCONE */
+icone.onchange = ()=>{
+
+  const file =
+  icone.files[0];
+
+  if(file){
+
+    iconPreview.src =
+    URL.createObjectURL(file);
+
+  }
+
+};
+
+/* PREVIEW IMAGENS */
+imagens.onchange = ()=>{
+
+  imgsPreview.innerHTML = "";
+
+  [...imagens.files]
+  .forEach(file=>{
+
+    const img =
+    document.createElement("img");
+
+    img.src =
+    URL.createObjectURL(file);
+
+    imgsPreview.appendChild(img);
+
+  });
+
+};
+
 /* SALVAR */
-document.getElementById("saveBtn")
-.onclick = async ()=>{
+saveBtn.onclick =
+async ()=>{
 
   try{
 
-    const nome =
-    document.getElementById("nome").value;
+    abrirLoading();
 
-    const descricao =
-    document.getElementById("descricao").value;
-
-    const versao =
-    document.getElementById("versao").value;
-
-    const categoria =
-    document.getElementById("categoria").value;
+    setLoading(
+      "Preparando atualização...",
+      10
+    );
 
     const zip =
-    document.getElementById("zip").files[0];
+    document.getElementById("zip")
+    .files[0];
 
-    const icone =
-    document.getElementById("icone").files[0];
+    const iconeFile =
+    document.getElementById("icone")
+    .files[0];
 
-    const imagens =
-    document.getElementById("imagens").files;
+    const imagensFiles =
+    document.getElementById("imagens")
+    .files;
 
     let zipURL =
     mod.zipURL;
@@ -398,6 +917,11 @@ document.getElementById("saveBtn")
     /* ZIP */
     if(zip){
 
+      setLoading(
+        "Enviando arquivo ZIP...",
+        25
+      );
+
       const zipRef =
       ref(storage,
       `${base}/arquivo.zip`);
@@ -413,7 +937,12 @@ document.getElementById("saveBtn")
     }
 
     /* ÍCONE */
-    if(icone){
+    if(iconeFile){
+
+      setLoading(
+        "Atualizando ícone...",
+        50
+      );
 
       const iconRef =
       ref(storage,
@@ -421,7 +950,7 @@ document.getElementById("saveBtn")
 
       await uploadBytesResumable(
         iconRef,
-        icone
+        iconeFile
       );
 
       iconURL =
@@ -430,11 +959,16 @@ document.getElementById("saveBtn")
     }
 
     /* IMAGENS */
-    if(imagens.length > 0){
+    if(imagensFiles.length > 0){
+
+      setLoading(
+        "Enviando screenshots...",
+        75
+      );
 
       imgs = [];
 
-      for(let i=0;i<imagens.length;i++){
+      for(let i=0;i<imagensFiles.length;i++){
 
         const imgRef =
         ref(storage,
@@ -442,7 +976,7 @@ document.getElementById("saveBtn")
 
         await uploadBytesResumable(
           imgRef,
-          imagens[i]
+          imagensFiles[i]
         );
 
         imgs.push(
@@ -453,44 +987,51 @@ document.getElementById("saveBtn")
 
     }
 
-    /* TAMANHO */
-    let tamanhoMB =
-    mod.tamanhoMB || "0";
+    setLoading(
+      "Finalizando atualização...",
+      90
+    );
 
-    if(zip){
-
-      tamanhoMB =
-      (zip.size / 1024 / 1024)
-      .toFixed(2);
-
-    }
-
-    /* UPDATE */
     await update(modRef,{
 
-      nome,
-      descricao,
-      versao,
-      categoria,
+      nome:nome.value,
+
+      descricao:
+      descricao.value,
+
+      versao:
+      versao.value,
+
+      categoria:
+      categoria.value,
 
       zipURL,
       iconURL,
 
-      imagens: imgs,
-
-      tamanhoMB,
+      imagens:imgs,
 
       ultimaEdicao:
       Date.now()
 
     });
 
-    alert("Mod atualizado!");
+    setLoading(
+      "Mod atualizado com sucesso!",
+      100
+    );
 
-    window.location.href =
-    "MinhasPublicacoes.html";
+    setTimeout(()=>{
+
+      alert("Mod atualizado!");
+
+      location.href =
+      "MinhasPublicacoes.html";
+
+    },900);
 
   }catch(e){
+
+    fecharLoading();
 
     alert(e.message);
 
