@@ -32,7 +32,9 @@ h1{
   margin-bottom:15px;
 }
 
-input, textarea, select{
+input,
+textarea,
+select{
   width:100%;
   margin-top:8px;
   padding:10px;
@@ -61,10 +63,12 @@ button{
 
 .btn-main{
   background:#00c853;
+  color:black;
 }
 
 .btn-sec{
   background:#2196f3;
+  color:white;
 }
 
 .list{
@@ -97,10 +101,6 @@ button{
   flex-shrink:0;
 }
 
-.del-btn:hover{
-  background:#ff1f1f;
-}
-
 .user-box{
   background:#151515;
   border:1px solid #2a2a2a;
@@ -113,6 +113,78 @@ button{
   color:#00c853;
   font-weight:bold;
 }
+
+/* MODAL UPLOAD */
+.upload-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.upload-box{
+  width:90%;
+  max-width:340px;
+  background:#1c1c1c;
+  border-radius:18px;
+  padding:25px;
+  text-align:center;
+  border:1px solid #2f2f2f;
+}
+
+.upload-spinner{
+  width:60px;
+  height:60px;
+  border:5px solid #333;
+  border-top:5px solid #00c853;
+  border-radius:50%;
+  margin:auto;
+  animation:spin 1s linear infinite;
+}
+
+.upload-title{
+  margin-top:18px;
+  font-size:20px;
+  font-weight:bold;
+  color:#00c853;
+}
+
+.upload-status{
+  margin-top:10px;
+  color:#ccc;
+  font-size:14px;
+}
+
+.upload-progress{
+  margin-top:20px;
+  width:100%;
+  height:10px;
+  background:#2a2a2a;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.upload-bar{
+  width:0%;
+  height:100%;
+  background:#00c853;
+  transition:0.3s;
+}
+
+@keyframes spin{
+
+  from{
+    transform:rotate(0deg);
+  }
+
+  to{
+    transform:rotate(360deg);
+  }
+
+}
 </style>
 </head>
 
@@ -123,8 +195,13 @@ button{
 <h1>📦 Upload de Mods Pro</h1>
 
 <div class="user-box">
+
   Logado como:
-  <span id="nickLogado">Carregando...</span>
+
+  <span id="nickLogado">
+    Carregando...
+  </span>
+
 </div>
 
 <!-- INFO -->
@@ -132,25 +209,43 @@ button{
 
   <h3>Informações</h3>
 
-  <input id="nome" placeholder="Nome do Mod">
+  <input
+  id="nome"
+  placeholder="Nome do Mod">
 
-  <textarea id="descricao" placeholder="Descrição"></textarea>
+  <textarea
+  id="descricao"
+  placeholder="Descrição"></textarea>
 
-  <input id="versao" placeholder="Versão">
+  <input
+  id="versao"
+  placeholder="Versão">
 
   <select id="categoria">
 
-    <option value="">Categoria</option>
+    <option value="">
+      Categoria
+    </option>
 
-    <option>Roupas</option>
+    <option>
+      Roupas
+    </option>
 
-    <option>Armas</option>
+    <option>
+      Armas
+    </option>
 
-    <option>Veiculos</option>
+    <option>
+      Veiculos
+    </option>
 
-    <option>Construções</option>
+    <option>
+      Construções
+    </option>
 
-    <option>Variados</option>
+    <option>
+      Variados
+    </option>
 
   </select>
 
@@ -161,11 +256,21 @@ button{
 
   <h3>Arquivos</h3>
 
-  <input type="file" id="zip" accept=".zip">
+  <input
+  type="file"
+  id="zip"
+  accept=".zip">
 
-  <input type="file" id="icone" accept="image/*">
+  <input
+  type="file"
+  id="icone"
+  accept="image/*">
 
-  <input type="file" id="imagens" multiple accept="image/*">
+  <input
+  type="file"
+  id="imagens"
+  multiple
+  accept="image/*">
 
 </div>
 
@@ -174,15 +279,25 @@ button{
 
   <h3>🔗 Dependências</h3>
 
-  <input id="depNome" placeholder="Nome dependência">
+  <input
+  id="depNome"
+  placeholder="Nome dependência">
 
-  <input id="depLink" placeholder="Link">
+  <input
+  id="depLink"
+  placeholder="Link">
 
-  <button class="btn-sec" onclick="addDep()">
+  <button
+  class="btn-sec"
+  onclick="addDep()">
+
     Adicionar dependência
+
   </button>
 
-  <div class="list" id="deps"></div>
+  <div
+  class="list"
+  id="deps"></div>
 
 </div>
 
@@ -191,24 +306,69 @@ button{
 
   <h3>🎥 Vídeos YouTube</h3>
 
-  <input id="videoLink" placeholder="Link do vídeo">
+  <input
+  id="videoLink"
+  placeholder="Link do vídeo">
 
-  <button class="btn-sec" onclick="addVideo()">
+  <button
+  class="btn-sec"
+  onclick="addVideo()">
+
     Adicionar vídeo
+
   </button>
 
-  <div class="list" id="videos"></div>
+  <div
+  class="list"
+  id="videos"></div>
 
 </div>
 
 <!-- ENVIAR -->
 <div class="card">
 
-  <button class="btn-main" id="uploadBtn">
+  <button
+  class="btn-main"
+  id="uploadBtn">
+
     🚀 Enviar Mod
+
   </button>
 
 </div>
+
+</div>
+
+<!-- MODAL -->
+<div
+class="upload-modal"
+id="uploadModal">
+
+  <div class="upload-box">
+
+    <div class="upload-spinner"></div>
+
+    <div class="upload-title">
+      Enviando Mod...
+    </div>
+
+    <div
+    class="upload-status"
+    id="uploadStatus">
+
+      Preparando upload...
+
+    </div>
+
+    <div class="upload-progress">
+
+      <div
+      class="upload-bar"
+      id="uploadBar"></div>
+
+    </div>
+
+  </div>
 
 </div>
 
@@ -234,66 +394,79 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyB5A-ySceXCFRQ7iSCnOA68nRJqYpK6DQc",
+  apiKey:
+  "AIzaSyB5A-ySceXCFRQ7iSCnOA68nRJqYpK6DQc",
 
   databaseURL:
   "https://dayzozmbi-server-default-rtdb.firebaseio.com",
 
-  projectId: "dayzozmbi-server",
+  projectId:
+  "dayzozmbi-server",
 
   storageBucket:
   "dayzozmbi-server.firebasestorage.app",
 
-  messagingSenderId: "221905253103",
+  messagingSenderId:
+  "221905253103",
 
   appId:
   "1:221905253103:android:fc1bc06782cf5735c4611a"
 
 };
 
-const app = initializeApp(firebaseConfig);
+const app =
+initializeApp(firebaseConfig);
 
-const storage = getStorage(app);
+const storage =
+getStorage(app);
 
-const db = getDatabase(app);
+const db =
+getDatabase(app);
 
 let dependencias = [];
 
 let videos = [];
 
-/* =========================
-   USUÁRIO
-========================= */
-
+/* USUÁRIO */
 const usuario =
-JSON.parse(localStorage.getItem("usuarioModSteam"));
+JSON.parse(
+localStorage.getItem(
+"usuarioModSteam")
+);
 
 if(!usuario || !usuario.nick){
 
-  alert("Faça login primeiro!");
+  alert(
+    "Faça login primeiro!"
+  );
 
-  window.location.href = "Login.html";
+  location.href =
+  "Login.html";
 
 }
 
-document.getElementById("nickLogado")
-.innerText = usuario.nick;
+document.getElementById(
+"nickLogado"
+).innerText = usuario.nick;
 
-/* =========================
-   DEPENDÊNCIAS
-========================= */
-
+/* DEPENDÊNCIAS */
 window.addDep = ()=>{
 
   const nome =
-  document.getElementById("depNome").value;
+  document.getElementById(
+    "depNome"
+  ).value;
 
   const link =
-  document.getElementById("depLink").value;
+  document.getElementById(
+    "depLink"
+  ).value;
 
   if(!nome || !link){
 
-    return alert("Preencha tudo!");
+    return alert(
+      "Preencha tudo!"
+    );
 
   }
 
@@ -304,15 +477,22 @@ window.addDep = ()=>{
 
   renderDeps();
 
-  document.getElementById("depNome").value = "";
-  document.getElementById("depLink").value = "";
+  document.getElementById(
+    "depNome"
+  ).value = "";
+
+  document.getElementById(
+    "depLink"
+  ).value = "";
 
 };
 
 function renderDeps(){
 
   const el =
-  document.getElementById("deps");
+  document.getElementById(
+    "deps"
+  );
 
   el.innerHTML = "";
 
@@ -324,15 +504,18 @@ function renderDeps(){
     div.className = "item";
 
     div.innerHTML = `
-      <span>🔗 ${d.nome}</span>
+      <span>
+        🔗 ${d.nome}
+      </span>
 
       <button class="del-btn">
         🗑️
       </button>
     `;
 
-    div.querySelector(".del-btn")
-    .onclick = ()=>{
+    div.querySelector(
+      ".del-btn"
+    ).onclick = ()=>{
 
       dependencias.splice(i,1);
 
@@ -346,18 +529,19 @@ function renderDeps(){
 
 }
 
-/* =========================
-   VIDEOS
-========================= */
-
+/* VIDEOS */
 window.addVideo = ()=>{
 
   const link =
-  document.getElementById("videoLink").value;
+  document.getElementById(
+    "videoLink"
+  ).value;
 
   if(!link){
 
-    return alert("Link inválido!");
+    return alert(
+      "Link inválido!"
+    );
 
   }
 
@@ -365,14 +549,18 @@ window.addVideo = ()=>{
 
   renderVideos();
 
-  document.getElementById("videoLink").value = "";
+  document.getElementById(
+    "videoLink"
+  ).value = "";
 
 };
 
 function renderVideos(){
 
   const el =
-  document.getElementById("videos");
+  document.getElementById(
+    "videos"
+  );
 
   el.innerHTML = "";
 
@@ -384,15 +572,18 @@ function renderVideos(){
     div.className = "item";
 
     div.innerHTML = `
-      <span>🎥 ${v}</span>
+      <span>
+        🎥 ${v}
+      </span>
 
       <button class="del-btn">
         🗑️
       </button>
     `;
 
-    div.querySelector(".del-btn")
-    .onclick = ()=>{
+    div.querySelector(
+      ".del-btn"
+    ).onclick = ()=>{
 
       videos.splice(i,1);
 
@@ -406,33 +597,90 @@ function renderVideos(){
 
 }
 
-/* =========================
-   UPLOAD
-========================= */
+/* MODAL */
+const uploadModal =
+document.getElementById(
+"uploadModal"
+);
 
-document.getElementById("uploadBtn")
-.addEventListener("click", async ()=>{
+const uploadStatus =
+document.getElementById(
+"uploadStatus"
+);
+
+const uploadBar =
+document.getElementById(
+"uploadBar"
+);
+
+function abrirModal(){
+
+  uploadModal.style.display =
+  "flex";
+
+}
+
+function fecharModal(){
+
+  uploadModal.style.display =
+  "none";
+
+}
+
+function atualizarStatus(
+texto,
+porcentagem
+){
+
+  uploadStatus.innerText =
+  texto;
+
+  uploadBar.style.width =
+  porcentagem + "%";
+
+}
+
+/* UPLOAD */
+document.getElementById(
+"uploadBtn"
+).addEventListener(
+"click",
+async ()=>{
 
   const nome =
-  document.getElementById("nome").value;
+  document.getElementById(
+    "nome"
+  ).value;
 
   const descricao =
-  document.getElementById("descricao").value;
+  document.getElementById(
+    "descricao"
+  ).value;
 
   const versao =
-  document.getElementById("versao").value;
+  document.getElementById(
+    "versao"
+  ).value;
 
   const categoria =
-  document.getElementById("categoria").value;
+  document.getElementById(
+    "categoria"
+  ).value;
 
   const zip =
-  document.getElementById("zip").files[0];
+  document.getElementById(
+    "zip"
+  ).files[0];
 
   const icone =
-  document.getElementById("icone").files[0];
+  document.getElementById(
+    "icone"
+  ).files[0];
 
   const imagens =
-  document.getElementById("imagens").files;
+  document.getElementById(
+    "imagens"
+  ).files;
 
   if(
     !nome ||
@@ -443,17 +691,31 @@ document.getElementById("uploadBtn")
     !versao
   ){
 
-    return alert("Preencha tudo!");
+    return alert(
+      "Preencha tudo!"
+    );
 
   }
 
-  if(imagens.length < 1 || imagens.length > 5){
+  if(
+    imagens.length < 1 ||
+    imagens.length > 5
+  ){
 
-    return alert("Envie de 1 a 5 imagens!");
+    return alert(
+      "Envie de 1 a 5 imagens!"
+    );
 
   }
 
   try{
+
+    abrirModal();
+
+    atualizarStatus(
+      "Preparando arquivos...",
+      5
+    );
 
     const base =
     "mods/" + Date.now();
@@ -462,22 +724,41 @@ document.getElementById("uploadBtn")
 
       .normalize("NFD")
 
-      .replace(/[\u0300-\u036f]/g,"")
+      .replace(
+        /[\u0300-\u036f]/g,
+        ""
+      )
 
-      .replace(/[^a-zA-Z0-9 ]/g,"")
+      .replace(
+        /[^a-zA-Z0-9 ]/g,
+        ""
+      )
 
       .trim()
 
-      .replace(/\s+/g,"_");
+      .replace(
+        /\s+/g,
+        "_"
+      );
 
-    /* TAMANHO DO MOD */
     const tamanhoMB =
-    (zip.size / 1024 / 1024).toFixed(1);
+    (
+      zip.size /
+      1024 /
+      1024
+    ).toFixed(1);
 
     /* ZIP */
+    atualizarStatus(
+      "📦 Enviando arquivo ZIP...",
+      20
+    );
+
     const zipRef =
-    ref(storage,
-    `${base}/${nomeSeguro}.zip`);
+    ref(
+      storage,
+      `${base}/${nomeSeguro}.zip`
+    );
 
     await uploadBytesResumable(
       zipRef,
@@ -485,12 +766,21 @@ document.getElementById("uploadBtn")
     );
 
     const zipURL =
-    await getDownloadURL(zipRef);
+    await getDownloadURL(
+      zipRef
+    );
 
     /* ÍCONE */
+    atualizarStatus(
+      "🖼️ Enviando ícone...",
+      40
+    );
+
     const iconRef =
-    ref(storage,
-    base+"/icon.png");
+    ref(
+      storage,
+      base + "/icon.png"
+    );
 
     await uploadBytesResumable(
       iconRef,
@@ -498,16 +788,43 @@ document.getElementById("uploadBtn")
     );
 
     const iconURL =
-    await getDownloadURL(iconRef);
+    await getDownloadURL(
+      iconRef
+    );
 
     /* IMAGENS */
+    atualizarStatus(
+      "🖼️ Enviando imagens...",
+      60
+    );
+
     let imgs = [];
 
-    for(let i=0;i<imagens.length;i++){
+    for(
+      let i = 0;
+      i < imagens.length;
+      i++
+    ){
+
+      atualizarStatus(
+        `📸 Enviando imagem ${
+          i + 1
+        } de ${
+          imagens.length
+        }...`,
+        60 + (
+          (
+            i + 1
+          ) /
+          imagens.length
+        ) * 20
+      );
 
       const imgRef =
-      ref(storage,
-      `${base}/img_${i}`);
+      ref(
+        storage,
+        `${base}/img_${i}`
+      );
 
       await uploadBytesResumable(
         imgRef,
@@ -515,44 +832,68 @@ document.getElementById("uploadBtn")
       );
 
       const url =
-      await getDownloadURL(imgRef);
+      await getDownloadURL(
+        imgRef
+      );
 
       imgs.push(url);
 
     }
 
-    /* SALVAR FIREBASE */
-    await push(dbRef(db,"mods"),{
+    /* SALVAR */
+    atualizarStatus(
+      "💾 Salvando informações...",
+      90
+    );
 
-      nome,
-      descricao,
-      versao,
-      categoria,
+    await push(
+      dbRef(db,"mods"),
+      {
 
-      zipURL,
-      iconURL,
+        nome,
+        descricao,
+        versao,
+        categoria,
 
-      imagens: imgs,
+        zipURL,
+        iconURL,
 
-      dependencias,
-      videos,
+        imagens: imgs,
 
-      data: Date.now(),
+        dependencias,
+        videos,
 
-      downloads: 0,
+        data: Date.now(),
 
-      tamanhoMB,
+        downloads: 0,
 
-      autorNick: usuario.nick
+        tamanhoMB,
 
-    });
+        autorNick:
+        usuario.nick
 
-    alert("Upload concluído!");
+      }
+    );
 
-    window.location.href =
-    "MinhasPublicacoes.html";
+    atualizarStatus(
+      "✅ Upload concluído!",
+      100
+    );
+
+    setTimeout(()=>{
+
+      alert(
+        "Mod enviado com sucesso!"
+      );
+
+      location.href =
+      "MinhasPublicacoes.html";
+
+    },1200);
 
   }catch(e){
+
+    fecharModal();
 
     alert(e.message);
 
