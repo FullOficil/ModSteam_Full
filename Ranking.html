@@ -1006,7 +1006,7 @@ function render(){
 
           <div class="meta">
 
-            Entrou:
+            📅 Entrou:
             ${p.dataInicio || "N/A"}
 
           </div>
@@ -1038,7 +1038,8 @@ function render(){
           ?
           `
           <button
-          class="icon-btn edit-btn">
+          class="icon-btn edit-btn"
+          title="Editar">
 
             ✏️
 
@@ -1049,7 +1050,8 @@ function render(){
         }
 
         <button
-        class="icon-btn">
+        class="icon-btn more-btn"
+        title="Mais informações">
 
           ☰
 
@@ -1059,14 +1061,12 @@ function render(){
 
     `;
 
-    const btns =
-    card.querySelectorAll(
-    ".icon-btn"
+    const moreBtn =
+    card.querySelector(
+    ".more-btn"
     );
 
-    btns[
-      btns.length - 1
-    ].onclick = ()=>{
+    moreBtn.onclick = ()=>{
 
       abrirInfo(p);
 
@@ -1074,7 +1074,12 @@ function render(){
 
     if(isADM){
 
-      btns[0].onclick = ()=>{
+      const editBtn =
+      card.querySelector(
+      ".edit-btn"
+      );
+
+      editBtn.onclick = ()=>{
 
         abrirADM(p);
 
