@@ -773,32 +773,41 @@ localStorage.getItem(
 
 let isADM = false;
 
-if(usuario.nick){
+/* VERIFICAR ADM */
 
-  onValue(
+onValue(
+  ref(db,"usuarios"),
+  (snap)=>{
 
-    ref(
-      db,
-      "usuarios/" +
-      usuario.nick
-    ),
+    if(!snap.exists()) return;
 
-    (snap)=>{
+    const usuarios =
+    snap.val();
 
-      if(snap.exists()){
+    isADM = false;
 
-        isADM =
-        snap.val().ADM === true;
+    Object.keys(usuarios)
+    .forEach((key)=>{
 
-        render();
+      const u =
+      usuarios[key];
+
+      if(
+        u.nick === usuario.nick
+        &&
+        u.ADM === true
+      ){
+
+        isADM = true;
 
       }
 
-    }
+    });
 
-  );
+    render();
 
-}
+  }
+);
 
 let ranking = [];
 
@@ -1038,8 +1047,7 @@ function render(){
           ?
           `
           <button
-          class="icon-btn edit-btn"
-          title="Editar">
+          class="icon-btn edit-btn">
 
             ✏️
 
@@ -1050,8 +1058,7 @@ function render(){
         }
 
         <button
-        class="icon-btn more-btn"
-        title="Mais informações">
+        class="icon-btn more-btn">
 
           ☰
 
