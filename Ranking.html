@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Ranking Project Zomboid</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial;
+  background:#000;
+  color:white;
+  overflow-x:hidden;
+}
+
+/* VIDEO */
+
+.bg-video{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:-2;
+}
+
+.bg-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.72);
+  z-index:-1;
+}
+
+/* HEADER */
+
+.header{
+
+  padding:15px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  background:
+  rgba(0,0,0,0.45);
+
+  backdrop-filter:blur(10px);
+
+  border-bottom:1px solid #222;
+
+  position:sticky;
+  top:0;
+  z-index:100;
+
+}
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.back-btn{
+  font-size:24px;
+  cursor:pointer;
+}
+
+.title{
+  font-size:18px;
+  font-weight:bold;
+  color:#00e676;
+}
+
+.join-btn{
+
+  border:none;
+
+  background:#00c853;
+
+  color:black;
+
+  padding:12px 14px;
+
+  border-radius:12px;
+
+  font-size:12px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+}
+
+/* CONTAINER */
+
+.container{
+  padding:12px;
+}
+
+/* LOADING */
+
+.loading{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:90px 20px;
+  color:#aaa;
+}
+
+.loader{
+
+  width:60px;
+  height:60px;
+
+  border-radius:50%;
+
+  border:5px solid #222;
+  border-top:5px solid #00e676;
+
+  animation:giro 1s linear infinite;
+
+  margin-bottom:18px;
+
+}
+
+@keyframes giro{
+
+  to{
+    transform:rotate(360deg);
+  }
+
+}
+
+/* CARD */
+
+.card{
+
+  background:
+  rgba(20,20,20,0.78);
+
+  backdrop-filter:blur(10px);
+
+  border-radius:16px;
+
+  border:1px solid #242424;
+
+  padding:12px;
+
+  margin-bottom:10px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  gap:10px;
+
+}
+
+.left{
+  display:flex;
+  gap:12px;
+  flex:1;
+}
+
+.rank{
+
+  width:44px;
+  height:44px;
+
+  border-radius:12px;
+
+  background:#00c853;
+
+  color:black;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-weight:bold;
+
+}
+
+.info{
+  flex:1;
+}
+
+.nick{
+  font-size:15px;
+  font-weight:bold;
+  color:#00e676;
+}
+
+.meta{
+  color:#aaa;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.stats{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+
+.stat{
+
+  background:#1f1f1f;
+
+  padding:6px 10px;
+
+  border-radius:10px;
+
+  font-size:11px;
+
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+
+  width:40px;
+  height:40px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#262626;
+
+  color:white;
+
+  cursor:pointer;
+
+  font-size:17px;
+
+}
+
+.edit-btn{
+  background:#00c853;
+  color:black;
+}
+
+/* EMPTY */
+
+.empty{
+  text-align:center;
+  color:#777;
+  margin-top:70px;
+  font-size:15px;
+}
+
+/* MODAL */
+
+.modal{
+
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,0.75);
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:15px;
+
+  z-index:999;
+
+}
+
+.modal-box{
+
+  width:100%;
+  max-width:560px;
+
+  background:
+  rgba(20,20,20,0.96);
+
+  backdrop-filter:blur(12px);
+
+  border-radius:20px;
+
+  padding:20px;
+
+  max-height:90vh;
+  overflow-y:auto;
+
+}
+
+.modal-title{
+
+  font-size:22px;
+  font-weight:bold;
+
+  color:#00e676;
+
+  margin-bottom:20px;
+
+}
+
+.input-group{
+  margin-bottom:15px;
+}
+
+.label{
+  font-size:13px;
+  color:#aaa;
+  margin-bottom:7px;
+}
+
+input{
+
+  width:100%;
+
+  border:none;
+  outline:none;
+
+  background:#262626;
+
+  color:white;
+
+  padding:14px;
+
+  border-radius:12px;
+
+}
+
+.grid{
+
+  display:grid;
+
+  grid-template-columns:
+  1fr 1fr;
+
+  gap:10px;
+
+}
+
+.skill{
+
+  background:#1f1f1f;
+
+  padding:12px;
+
+  border-radius:12px;
+
+}
+
+.skill-name{
+
+  font-size:13px;
+
+  color:#aaa;
+
+  margin-bottom:8px;
+
+}
+
+.modal-actions{
+
+  display:flex;
+
+  gap:10px;
+
+  margin-top:20px;
+
+}
+
+.btn{
+
+  flex:1;
+
+  border:none;
+
+  padding:14px;
+
+  border-radius:12px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+}
+
+.cancel-btn{
+  background:#333;
+  color:white;
+}
+
+.save-btn{
+  background:#00c853;
+  color:black;
+}
+
+.info-stat{
+
+  background:#1f1f1f;
+
+  padding:12px;
+
+  border-radius:12px;
+
+  margin-bottom:10px;
+
+  font-size:14px;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- VIDEO -->
+
+<video
+id="bgVideo"
+class="bg-video"
+autoplay
+muted
+loop
+playsinline
+preload="auto">
+
+  <source
+  src="VideoDeFundo.mp4"
+  type="video/mp4">
+
+</video>
+
+<div class="bg-overlay"></div>
+
+<!-- HEADER -->
+
+<div class="header">
+
+  <div class="header-left">
+
+    <div class="back-btn"
+    onclick="history.back()">
+
+      ←
+
+    </div>
+
+    <div class="title">
+
+      🏆 Ranking PZ
+
+    </div>
+
+  </div>
+
+  <button class="join-btn"
+  onclick="abrirParticipar()">
+
+    🏆 Participar
+
+  </button>
+
+</div>
+
+<!-- LISTA -->
+
+<div class="container"
+id="rankingList">
+
+  <div class="loading">
+
+    <div class="loader"></div>
+
+    Carregando Ranking...
+
+  </div>
+
+</div>
+
+<!-- MODAL PARTICIPAR -->
+
+<div class="modal"
+id="participarModal">
+
+  <div class="modal-box">
+
+    <div class="modal-title">
+
+      Participar do Evento
+
+    </div>
+
+    <div class="input-group">
+
+      <div class="label">
+
+        Nick do personagem
+
+      </div>
+
+      <input
+      id="nick">
+
+    </div>
+
+    <div class="input-group">
+
+      <div class="label">
+
+        Data que entrou
+
+      </div>
+
+      <input
+      type="date"
+      id="dataInicio">
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button
+      class="btn cancel-btn"
+      onclick="fecharParticipar()">
+
+        Cancelar
+
+      </button>
+
+      <button
+      class="btn save-btn"
+      onclick="participar()">
+
+        Participar
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- MODAL INFO -->
+
+<div class="modal"
+id="infoModal">
+
+  <div class="modal-box">
+
+    <div class="modal-title">
+
+      Mais Informações
+
+    </div>
+
+    <div id="infoContent"></div>
+
+    <div class="modal-actions">
+
+      <button
+      class="btn cancel-btn"
+      onclick="fecharInfo()">
+
+        Fechar
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- MODAL ADM -->
+
+<div class="modal"
+id="admModal">
+
+  <div class="modal-box">
+
+    <div class="modal-title">
+
+      Editar Jogador
+
+    </div>
+
+    <div class="input-group">
+
+      <div class="label">
+        Zombies Mortos
+      </div>
+
+      <input
+      type="number"
+      id="editZombies">
+    </div>
+
+    <div class="input-group">
+
+      <div class="label">
+        Tempo Vivo
+      </div>
+
+      <input
+      id="editTempo">
+
+    </div>
+
+    <div class="grid">
+
+      <div class="skill">
+
+        <div class="skill-name">
+          Aptidão Física
+        </div>
+
+        <input
+        type="number"
+        id="editAptidao">
+
+      </div>
+
+      <div class="skill">
+
+        <div class="skill-name">
+          Força
+        </div>
+
+        <input
+        type="number"
+        id="editForca">
+
+      </div>
+
+      <div class="skill">
+
+        <div class="skill-name">
+          Machado
+        </div>
+
+        <input
+        type="number"
+        id="editMachado">
+
+      </div>
+
+      <div class="skill">
+
+        <div class="skill-name">
+          Lança
+        </div>
+
+        <input
+        type="number"
+        id="editLanca">
+
+      </div>
+
+      <div class="skill">
+
+        <div class="skill-name">
+          Mira
+        </div>
+
+        <input
+        type="number"
+        id="editMira">
+
+      </div>
+
+      <div class="skill">
+
+        <div class="skill-name">
+          Recarregar
+        </div>
+
+        <input
+        type="number"
+        id="editRecarregar">
+
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button
+      class="btn cancel-btn"
+      onclick="fecharADM()">
+
+        Cancelar
+
+      </button>
+
+      <button
+      class="btn save-btn"
+      onclick="salvarADM()">
+
+        Salvar
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  push,
+  onValue,
+  update
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+
+  apiKey:
+  "AIzaSyB5A-ySceXCFRQ7iSCnOA68nRJqYpK6DQc",
+
+  databaseURL:
+  "https://dayzozmbi-server-default-rtdb.firebaseio.com",
+
+  projectId:
+  "dayzozmbi-server",
+
+  storageBucket:
+  "dayzozmbi-server.firebasestorage.app",
+
+  messagingSenderId:
+  "221905253103",
+
+  appId:
+  "1:221905253103:android:fc1bc06782cf5735c4611a"
+
+};
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getDatabase(app);
+
+const usuario =
+JSON.parse(
+localStorage.getItem(
+"usuarioModSteam"
+)) || {};
+
+let isADM = false;
+
+if(usuario.nick){
+
+  onValue(
+
+    ref(
+      db,
+      "usuarios/" +
+      usuario.nick
+    ),
+
+    (snap)=>{
+
+      if(snap.exists()){
+
+        isADM =
+        snap.val().ADM === true;
+
+        render();
+
+      }
+
+    }
+
+  );
+
+}
+
+let ranking = [];
+
+let jogadorAtual = null;
+
+const rankingList =
+document.getElementById(
+"rankingList"
+);
+
+/* VIDEO */
+
+const video =
+document.getElementById(
+"bgVideo"
+);
+
+video.addEventListener(
+"loadedmetadata",
+()=>{
+
+  video.currentTime = 20;
+
+});
+
+video.addEventListener(
+"timeupdate",
+()=>{
+
+  if(
+    video.currentTime >=
+    video.duration - 0.3
+  ){
+
+    video.currentTime = 20;
+
+  }
+
+});
+
+/* MODAIS */
+
+window.abrirParticipar = ()=>{
+
+  participarModal.style.display =
+  "flex";
+
+};
+
+window.fecharParticipar = ()=>{
+
+  participarModal.style.display =
+  "none";
+
+};
+
+window.fecharInfo = ()=>{
+
+  infoModal.style.display =
+  "none";
+
+};
+
+window.fecharADM = ()=>{
+
+  admModal.style.display =
+  "none";
+
+};
+
+/* PARTICIPAR */
+
+window.participar =
+async ()=>{
+
+  const nick =
+  document.getElementById(
+  "nick"
+  ).value.trim();
+
+  const dataInicio =
+  document.getElementById(
+  "dataInicio"
+  ).value;
+
+  if(!nick){
+
+    alert("Digite o nick.");
+
+    return;
+
+  }
+
+  await push(
+    ref(db,"ranking"),
+    {
+
+      nick,
+
+      dataInicio,
+
+      zombies:0,
+
+      tempoVivo:"0 dias",
+
+      skills:{
+
+        aptidao:0,
+        forca:0,
+        machado:0,
+        lanca:0,
+        mira:0,
+        recarregar:0
+
+      },
+
+      data:
+      Date.now()
+
+    }
+
+  );
+
+  fecharParticipar();
+
+};
+
+/* FIREBASE */
+
+onValue(
+ref(db,"ranking"),
+(snapshot)=>{
+
+  ranking = [];
+
+  snapshot.forEach((item)=>{
+
+    const dados =
+    item.val();
+
+    dados.id =
+    item.key;
+
+    ranking.push(dados);
+
+  });
+
+  ranking.sort(
+    (a,b)=>
+    (b.zombies || 0)
+    -
+    (a.zombies || 0)
+  );
+
+  render();
+
+});
+
+/* RENDER */
+
+function render(){
+
+  rankingList.innerHTML = "";
+
+  if(ranking.length <= 0){
+
+    rankingList.innerHTML = `
+
+      <div class="empty">
+
+        Nenhum participante ainda.
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  ranking.forEach((p,index)=>{
+
+    const card =
+    document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+
+      <div class="left">
+
+        <div class="rank">
+
+          #${index + 1}
+
+        </div>
+
+        <div class="info">
+
+          <div class="nick">
+
+            ${p.nick}
+
+          </div>
+
+          <div class="meta">
+
+            Entrou:
+            ${p.dataInicio || "N/A"}
+
+          </div>
+
+          <div class="stats">
+
+            <div class="stat">
+
+              🧟 ${p.zombies || 0}
+
+            </div>
+
+            <div class="stat">
+
+              ⏳ ${p.tempoVivo || "0 dias"}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="actions">
+
+        ${
+          isADM
+          ?
+          `
+          <button
+          class="icon-btn edit-btn">
+
+            ✏️
+
+          </button>
+          `
+          :
+          ""
+        }
+
+        <button
+        class="icon-btn">
+
+          ☰
+
+        </button>
+
+      </div>
+
+    `;
+
+    const btns =
+    card.querySelectorAll(
+    ".icon-btn"
+    );
+
+    btns[
+      btns.length - 1
+    ].onclick = ()=>{
+
+      abrirInfo(p);
+
+    };
+
+    if(isADM){
+
+      btns[0].onclick = ()=>{
+
+        abrirADM(p);
+
+      };
+
+    }
+
+    rankingList.appendChild(card);
+
+  });
+
+}
+
+/* INFO */
+
+window.abrirInfo = (p)=>{
+
+  infoContent.innerHTML = `
+
+    <div class="info-stat">
+      💪 Aptidão Física:
+      LV ${p.skills?.aptidao || 0}
+    </div>
+
+    <div class="info-stat">
+      🦾 Força:
+      LV ${p.skills?.forca || 0}
+    </div>
+
+    <div class="info-stat">
+      🪓 Machado:
+      LV ${p.skills?.machado || 0}
+    </div>
+
+    <div class="info-stat">
+      🔱 Lança:
+      LV ${p.skills?.lanca || 0}
+    </div>
+
+    <div class="info-stat">
+      🎯 Mira:
+      LV ${p.skills?.mira || 0}
+    </div>
+
+    <div class="info-stat">
+      🔫 Recarregar:
+      LV ${p.skills?.recarregar || 0}
+    </div>
+
+  `;
+
+  infoModal.style.display =
+  "flex";
+
+};
+
+/* ADM */
+
+window.abrirADM = (p)=>{
+
+  jogadorAtual = p;
+
+  editZombies.value =
+  p.zombies || 0;
+
+  editTempo.value =
+  p.tempoVivo || "";
+
+  editAptidao.value =
+  p.skills?.aptidao || 0;
+
+  editForca.value =
+  p.skills?.forca || 0;
+
+  editMachado.value =
+  p.skills?.machado || 0;
+
+  editLanca.value =
+  p.skills?.lanca || 0;
+
+  editMira.value =
+  p.skills?.mira || 0;
+
+  editRecarregar.value =
+  p.skills?.recarregar || 0;
+
+  admModal.style.display =
+  "flex";
+
+};
+
+window.salvarADM =
+async ()=>{
+
+  await update(
+
+    ref(
+      db,
+      "ranking/" +
+      jogadorAtual.id
+    ),
+
+    {
+
+      zombies:Number(
+        editZombies.value
+      ),
+
+      tempoVivo:
+      editTempo.value,
+
+      skills:{
+
+        aptidao:Number(
+          editAptidao.value
+        ),
+
+        forca:Number(
+          editForca.value
+        ),
+
+        machado:Number(
+          editMachado.value
+        ),
+
+        lanca:Number(
+          editLanca.value
+        ),
+
+        mira:Number(
+          editMira.value
+        ),
+
+        recarregar:Number(
+          editRecarregar.value
+        )
+
+      }
+
+    }
+
+  );
+
+  fecharADM();
+
+};
+
+</script>
+
+</body>
+</html>
