@@ -1,0 +1,21 @@
+ATUALIZAÇÃO PIX AUTOMÁTICO
+
+1. No GitHub, substitua os arquivos antigos pelos arquivos desta pasta.
+2. NÃO envie o arquivo .env.
+3. Confirme o commit.
+4. O Render fará um deploy automático.
+5. No Render, mantenha:
+   Build Command: yarn install
+   Start Command: npm start
+   NODE_VERSION=22
+   PUBLIC_URL=https://loja-dayzombi.onrender.com
+6. Aguarde o status ficar Live.
+7. Abra a loja e faça UMA COMPRA NOVA.
+
+NOVO FUNCIONAMENTO:
+- A loja fica aberta em uma aba.
+- O Mercado Pago abre em outra aba.
+- A loja verifica o pedido a cada 4 segundos.
+- Depois que o Pix for aprovado, a loja abre a tela de sucesso automaticamente.
+
+Não é necessário mudar novamente as configurações do Render somente por causa desta atualização.

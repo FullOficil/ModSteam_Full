@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja DayZombi</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    main {
+      width: min(92%, 450px);
+      padding: 32px;
+      border: 1px solid #333;
+      border-radius: 16px;
+      background: #1b1b1b;
+      text-align: center;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    }
+    h1 { margin: 0 0 10px; }
+    .descricao { color: #bbb; }
+    .preco { margin: 25px 0; font-size: 34px; font-weight: bold; }
+    button, .botao-link {
+      width: 100%;
+      display: inline-block;
+      padding: 15px 18px;
+      border: 0;
+      border-radius: 10px;
+      background: #00a650;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    button:disabled { cursor: wait; opacity: 0.65; }
+    .secundario { margin-top: 10px; background: #333; }
+    .texto-botao { margin-top: 12px; background: transparent; color: #bbb; padding: 8px; font-size: 14px; }
+    #mensagem { min-height: 22px; margin-top: 16px; color: #ffb4b4; line-height: 1.45; }
+    .seguro { margin-top: 18px; color: #8c8c8c; font-size: 13px; line-height: 1.45; }
+    #espera { display: none; }
+    .spinner {
+      width: 46px;
+      height: 46px;
+      margin: 8px auto 20px;
+      border: 4px solid #3b3b3b;
+      border-top-color: #00c865;
+      border-radius: 50%;
+      animation: girar .8s linear infinite;
+    }
+    @keyframes girar { to { transform: rotate(360deg); } }
+    #status { color: #facc15; line-height: 1.5; min-height: 48px; }
+    #pedido { color: #777; font-size: 11px; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <main>
+    <section id="produto">
+      <h1>Acesso DayZombi</h1>
+      <p class="descricao">Pagamento real para teste da integração.</p>
+      <div class="preco">R$ 0,50</div>
+      <button id="comprar" type="button">Comprar pelo Mercado Pago</button>
+      <p id="mensagem" role="alert"></p>
+      <p class="seguro">O checkout abrirá em outra aba. Esta página continuará verificando cartão e Pix diretamente no servidor.</p>
+    </section>
+
+    <section id="espera" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <h1>Aguardando pagamento</h1>
+      <p id="status">Abra o checkout e conclua o pagamento.</p>
+      <a id="abrir-checkout" class="botao-link" href="#" target="dayzombi_checkout" rel="noopener">Abrir checkout novamente</a>
+      <button id="novo-pedido" class="texto-botao" type="button">Começar outra compra</button>
+      <p id="pedido"></p>
+      <p class="seguro">Pode pagar o Pix pelo celular. Quando o Mercado Pago confirmar, esta página abrirá o resultado automaticamente.</p>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "dayzombi-pedido-ativo-v2";
+    const INTERVALO_CONSULTA_MS = 4000;
+    const EXPIRACAO_PEDIDO_MS = 24 * 60 * 60 * 1000;
+
+    const areaProduto = document.querySelector("#produto");
+    const areaEspera = document.querySelector("#espera");
+    const botaoComprar = document.querySelector("#comprar");
+    const mensagem = document.querySelector("#mensagem");
+    const statusTexto = document.querySelector("#status");
+    const pedidoTexto = document.querySelector("#pedido");
+    const linkCheckout = document.querySelector("#abrir-checkout");
+    const botaoNovoPedido = document.querySelector("#novo-pedido");
+
+    let pedidoAtivo = null;
+    let janelaCheckout = null;
+    let timerConsulta = null;
+    let consultaEmAndamento = false;
+
+    botaoComprar.addEventListener("click", criarPedido);
+    botaoNovoPedido.addEventListener("click", limparPedido);
+    window.addEventListener("message", receberMensagemDaAbaDoCheckout);
+
+    restaurarPedido();
+
+    async function criarPedido() {
+      botaoComprar.disabled = true;
+      botaoComprar.textContent = "Preparando checkout...";
+      mensagem.textContent = "";
+
+      // A janela é aberta imediatamente pelo clique para não ser bloqueada.
+      janelaCheckout = abrirJanelaDePreparacao();
+
+      try {
+        const response = await fetch("/api/criar-preferencia", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.checkoutUrl || !data.pedidoId) {
+          throw new Error(data.erro || "Não foi possível criar o checkout.");
+        }
+
+        pedidoAtivo = {
+          pedidoId: data.pedidoId,
+          checkoutUrl: data.checkoutUrl,
+          criadoEm: Date.now()
+        };
+        salvarPedido(pedidoAtivo);
+        mostrarEspera();
+
+        if (janelaCheckout && !janelaCheckout.closed) {
+          janelaCheckout.location.replace(data.checkoutUrl);
+        } else {
+          statusTexto.textContent = "O navegador bloqueou a nova aba. Clique em ‘Abrir checkout novamente’.";
+        }
+
+        iniciarMonitoramento();
+      } catch (error) {
+        if (janelaCheckout && !janelaCheckout.closed) {
+          janelaCheckout.close();
+        }
+        mensagem.textContent = error.message;
+        botaoComprar.disabled = false;
+        botaoComprar.textContent = "Comprar pelo Mercado Pago";
+      }
+    }
+
+    function abrirJanelaDePreparacao() {
+      const janela = window.open("about:blank", "dayzombi_checkout");
+
+      if (!janela) {
+        return null;
+      }
+
+      try {
+        janela.document.title = "Abrindo Mercado Pago";
+        janela.document.body.style.cssText = "margin:0;min-height:100vh;display:grid;place-items:center;background:#111;color:#fff;font-family:Arial,sans-serif;text-align:center";
+        janela.document.body.innerHTML = "<p>Preparando o checkout do Mercado Pago...</p>";
+      } catch {
+        // A navegação continuará mesmo se o navegador impedir a edição da aba.
+      }
+
+      return janela;
+    }
+
+    function restaurarPedido() {
+      try {
+        const salvo = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+
+        if (
+          salvo?.pedidoId &&
+          salvo?.checkoutUrl &&
+          Number.isFinite(salvo?.criadoEm) &&
+          Date.now() - salvo.criadoEm < EXPIRACAO_PEDIDO_MS
+        ) {
+          pedidoAtivo = salvo;
+          mostrarEspera();
+          iniciarMonitoramento();
+          return;
+        }
+      } catch {
+        // Conteúdo inválido é descartado abaixo.
+      }
+
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    function mostrarEspera() {
+      areaProduto.style.display = "none";
+      areaEspera.style.display = "block";
+      linkCheckout.href = pedidoAtivo.checkoutUrl;
+      pedidoTexto.textContent = `Pedido: ${pedidoAtivo.pedidoId}`;
+      statusTexto.textContent = "Checkout aberto. Aguardando o Mercado Pago identificar o pagamento...";
+    }
+
+    function iniciarMonitoramento() {
+      pararMonitoramento();
+      consultarPedido();
+      timerConsulta = window.setInterval(consultarPedido, INTERVALO_CONSULTA_MS);
+    }
+
+    function pararMonitoramento() {
+      if (timerConsulta) {
+        window.clearInterval(timerConsulta);
+        timerConsulta = null;
+      }
+    }
+
+    async function consultarPedido() {
+      if (!pedidoAtivo || consultaEmAndamento) {
+        return;
+      }
+
+      if (Date.now() - pedidoAtivo.criadoEm >= EXPIRACAO_PEDIDO_MS) {
+        pararMonitoramento();
+        statusTexto.textContent = "Este pedido expirou. Comece uma compra nova.";
+        return;
+      }
+
+      consultaEmAndamento = true;
+
+      try {
+        const response = await fetch(
+          `/api/verificar-pedido?pedido_id=${encodeURIComponent(pedidoAtivo.pedidoId)}`,
+          { cache: "no-store" }
+        );
+        const data = await response.json();
+
+        if (data.aprovado) {
+          finalizarPagamento(data);
+          return;
+        }
+
+        if (["rejected", "cancelled", "refunded", "charged_back"].includes(data.status)) {
+          pararMonitoramento();
+          statusTexto.textContent = data.mensagem || "O pagamento não foi aprovado.";
+          return;
+        }
+
+        if (data.status === "pending" || data.status === "in_process") {
+          statusTexto.textContent = "Pagamento localizado. Aguardando a confirmação final do Mercado Pago...";
+          return;
+        }
+
+        if (data.status === "indisponivel") {
+          statusTexto.textContent = "O servidor está tentando consultar novamente...";
+          return;
+        }
+
+        statusTexto.textContent = data.mensagem || "Aguardando o pagamento...";
+      } catch {
+        statusTexto.textContent = "Conexão temporariamente indisponível. Tentando novamente...";
+      } finally {
+        consultaEmAndamento = false;
+      }
+    }
+
+    function finalizarPagamento(data) {
+      pararMonitoramento();
+      localStorage.removeItem(STORAGE_KEY);
+
+      try {
+        if (janelaCheckout && !janelaCheckout.closed) {
+          janelaCheckout.close();
+        }
+      } catch {
+        // O navegador pode impedir o fechamento; isso não afeta a confirmação.
+      }
+
+      const pedidoId = data.pedidoId || pedidoAtivo.pedidoId;
+      window.location.href = `/sucesso.html?pedido_id=${encodeURIComponent(pedidoId)}`;
+    }
+
+    function receberMensagemDaAbaDoCheckout(event) {
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+
+      if (event.data?.tipo !== "dayzombi-pagamento-aprovado") {
+        return;
+      }
+
+      if (pedidoAtivo && event.data.pedidoId === pedidoAtivo.pedidoId) {
+        finalizarPagamento(event.data);
+      }
+    }
+
+    function limparPedido() {
+      pararMonitoramento();
+      localStorage.removeItem(STORAGE_KEY);
+      pedidoAtivo = null;
+      areaEspera.style.display = "none";
+      areaProduto.style.display = "block";
+      botaoComprar.disabled = false;
+      botaoComprar.textContent = "Comprar pelo Mercado Pago";
+      mensagem.textContent = "";
+    }
+
+    function salvarPedido(pedido) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(pedido));
+    }
+  </script>
+</body>
+</html>
