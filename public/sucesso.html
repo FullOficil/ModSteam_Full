@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificando pagamento</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .status-card { width:min(92%,560px); margin:80px auto; padding:32px; border:1px solid #333; border-radius:16px; background:#1a1a1a; text-align:center; }
+    .aprovado { color:#4ade80; } .pendente { color:#facc15; } .erro-status { color:#f87171; }
+    a { color:#fff; }
+  </style>
+</head>
+<body>
+  <main class="status-card">
+    <h1 id="titulo">Verificando pagamento...</h1>
+    <p id="mensagem">O servidor está consultando diretamente a API do Mercado Pago.</p>
+    <p id="detalhes"></p>
+    <a href="/">Voltar à loja</a>
+  </main>
+
+  <script>
+    "use strict";
+    const titulo = document.querySelector("#titulo");
+    const mensagem = document.querySelector("#mensagem");
+    const detalhes = document.querySelector("#detalhes");
+    const params = new URLSearchParams(location.search);
+    const paymentId = params.get("payment_id") || params.get("collection_id");
+
+    verificar();
+
+    async function verificar() {
+      if (!paymentId) {
+        mostrarErro("Pagamento não identificado", "A URL não trouxe o payment_id.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/verificar-pagamento?payment_id=${encodeURIComponent(paymentId)}`, { cache: "no-store" });
+        const data = await response.json();
+
+        if (data.aprovado) {
+          titulo.textContent = "Pagamento aprovado";
+          titulo.className = "aprovado";
+          mensagem.textContent = data.mensagem;
+          detalhes.textContent = `Pagamento: ${data.pagamentoId} — Valor: R$ ${Number(data.valor).toFixed(2).replace(".", ",")}`;
+          return;
+        }
+
+        if (["pending", "in_process", "indisponivel"].includes(data.status)) {
+          titulo.textContent = "Aguardando confirmação";
+          titulo.className = "pendente";
+          mensagem.textContent = data.mensagem || data.erro;
+          setTimeout(verificar, 3000);
+          return;
+        }
+
+        mostrarErro("Pagamento não liberado", data.mensagem || data.erro);
+      } catch {
+        titulo.textContent = "Tentando novamente...";
+        titulo.className = "pendente";
+        mensagem.textContent = "O servidor está temporariamente indisponível.";
+        setTimeout(verificar, 3000);
+      }
+    }
+
+    function mostrarErro(textoTitulo, textoMensagem) {
+      titulo.textContent = textoTitulo;
+      titulo.className = "erro-status";
+      mensagem.textContent = textoMensagem || "Pagamento não confirmado.";
+      detalhes.textContent = "";
+    }
+  </script>
+</body>
+</html>

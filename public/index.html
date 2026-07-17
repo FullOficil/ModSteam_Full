@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja DayZombi</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="checkout-shell">
+    <section class="produto-card">
+      <div>
+        <span class="etiqueta">DAYZOMBI</span>
+        <h1>Acesso DayZombi</h1>
+        <p>Pagamento incorporado ao site. Não abre o aplicativo do Mercado Pago.</p>
+      </div>
+      <strong class="preco">R$ 0,50</strong>
+    </section>
+
+    <section class="pagamento-card" aria-live="polite">
+      <div id="carregando" class="aviso">Carregando formas de pagamento...</div>
+      <div id="erro-configuracao" class="mensagem erro oculto"></div>
+      <div id="paymentBrick_container"></div>
+
+      <div id="resultado" class="resultado oculto">
+        <h2 id="resultado-titulo">Processando pagamento</h2>
+        <p id="resultado-mensagem"></p>
+
+        <div id="pix-area" class="pix-area oculto">
+          <p class="instrucao">Escaneie o QR Code com o aplicativo do seu banco ou copie o código Pix.</p>
+          <img id="pix-qr" alt="QR Code Pix">
+          <label for="pix-codigo">Pix Copia e Cola</label>
+          <textarea id="pix-codigo" readonly></textarea>
+          <button id="copiar-pix" type="button">Copiar código Pix</button>
+          <p id="pix-copiado" class="copiado oculto">Código copiado.</p>
+        </div>
+
+        <p id="detalhes-pagamento" class="detalhes"></p>
+        <button id="novo-pagamento" class="secundario" type="button">Fazer novo pagamento</button>
+      </div>
+
+      <p class="seguranca">O Access Token permanece somente no servidor. A aprovação é validada diretamente pela API.</p>
+    </section>
+  </main>
+</body>
+</html>
