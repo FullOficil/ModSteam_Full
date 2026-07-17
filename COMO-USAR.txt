@@ -1,0 +1,18 @@
+PASSO A PASSO RESUMIDO
+
+1. Publique esta pasta no GitHub, sem o arquivo .env.
+2. Crie um Web Service no Render.
+3. Build Command: npm install
+4. Start Command: npm start
+5. No Render, configure:
+   MP_ACCESS_TOKEN
+   MP_WEBHOOK_SECRET
+   PUBLIC_URL=https://SEU-SERVICO.onrender.com
+6. No Mercado Pago, configure o Webhook de produção:
+   https://SEU-SERVICO.onrender.com/api/webhook
+7. Marque o evento Pagamentos e salve.
+8. Copie a assinatura secreta do Mercado Pago para MP_WEBHOOK_SECRET no Render.
+9. Faça novo deploy.
+10. Faça uma compra nova de R$ 0,50.
+
+A página de sucesso consulta o pagamento no backend antes de liberar.

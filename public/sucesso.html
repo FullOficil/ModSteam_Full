@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificando pagamento</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    main {
+      width: min(92%, 520px);
+      padding: 32px;
+      border: 1px solid #333;
+      border-radius: 16px;
+      background: #1b1b1b;
+      text-align: center;
+    }
+    h1 { margin-top: 0; }
+    p { line-height: 1.5; color: #cfcfcf; }
+    .aprovado { color: #4ade80; }
+    .erro { color: #f87171; }
+    .pendente { color: #facc15; }
+    a { color: #fff; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="titulo">Verificando pagamento...</h1>
+    <p id="mensagem">Aguarde. O servidor está consultando diretamente a API do Mercado Pago.</p>
+    <p id="detalhes"></p>
+    <a href="/">Voltar à loja</a>
+  </main>
+
+  <script>
+    const titulo = document.querySelector("#titulo");
+    const mensagem = document.querySelector("#mensagem");
+    const detalhes = document.querySelector("#detalhes");
+    const params = new URLSearchParams(window.location.search);
+    const paymentId = params.get("payment_id") || params.get("collection_id");
+
+    verificar();
+
+    async function verificar() {
+      if (!paymentId) {
+        mostrarErro("Pagamento não identificado.", "A URL não trouxe o payment_id.");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/verificar-pagamento?payment_id=${encodeURIComponent(paymentId)}`,
+          { cache: "no-store" }
+        );
+        const data = await response.json();
+
+        if (data.aprovado) {
+          titulo.textContent = "Pagamento aprovado";
+          titulo.className = "aprovado";
+          mensagem.textContent = data.mensagem;
+          detalhes.textContent = `Pagamento: ${data.pagamentoId} — Valor: R$ ${Number(data.valor).toFixed(2).replace(".", ",")}`;
+          return;
+        }
+
+        if (data.status === "pending" || data.status === "in_process") {
+          titulo.textContent = "Pagamento pendente";
+          titulo.className = "pendente";
+          mensagem.textContent = data.mensagem;
+          detalhes.textContent = `Pagamento: ${data.pagamentoId}`;
+          return;
+        }
+
+        mostrarErro("Pagamento não liberado", data.mensagem || data.erro);
+      } catch (error) {
+        mostrarErro("Falha na verificação", "Não foi possível consultar o servidor.");
+      }
+    }
+
+    function mostrarErro(textoTitulo, textoMensagem) {
+      titulo.textContent = textoTitulo;
+      titulo.className = "erro";
+      mensagem.textContent = textoMensagem || "Pagamento não confirmado.";
+      detalhes.textContent = "";
+    }
+  </script>
+</body>
+</html>
