@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b09">
+
+  <title>DayZombi — Apoie o Desenvolvimento</title>
+  <meta
+    name="description"
+    content="Apoie o desenvolvimento do DayZombi, participe dos testes e acompanhe a meta do projeto. O jogo final será gratuito na Play Store."
+  >
+
+  <link
+    rel="icon"
+    type="image/jpeg"
+    href="https://firebasestorage.googleapis.com/v0/b/dayzozmbi-server.firebasestorage.app/o/Loja%20DayZombi%2Ficone.jpeg?alt=media&token=308c50c4-a734-4c9f-9963-4f7a168c57cb"
+  >
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="background" aria-hidden="true">
+    <video class="background__video" autoplay muted loop playsinline preload="metadata">
+      <source
+        src="https://firebasestorage.googleapis.com/v0/b/dayzozmbi-server.firebasestorage.app/o/Loja%20DayZombi%2Fvideo%20de%20fundo%20loja.mp4?alt=media&token=8a0406cd-79d0-4c6c-a5b1-fe77aea1ba2a"
+        type="video/mp4"
+      >
+    </video>
+    <div class="background__shade"></div>
+    <div class="background__texture"></div>
+  </div>
+
+  <header class="topbar section-shell">
+    <a class="brand" href="#inicio" aria-label="DayZombi — início">
+      <img
+        class="brand__icon"
+        src="https://firebasestorage.googleapis.com/v0/b/dayzozmbi-server.firebasestorage.app/o/Loja%20DayZombi%2Ficone.jpeg?alt=media&token=308c50c4-a734-4c9f-9963-4f7a168c57cb"
+        alt="Ícone do DayZombi"
+      >
+      <span class="brand__text">
+        <strong>DAYZOMBI</strong>
+        <small>APOIO AO PROJETO</small>
+      </span>
+    </a>
+
+    <nav class="topbar__nav" aria-label="Navegação principal">
+      <a href="#beneficios">Benefícios</a>
+      <a href="#duvidas">Dúvidas</a>
+      <a class="topbar__cta" href="#comprar">Apoiar agora</a>
+    </nav>
+  </header>
+
+  <main id="inicio">
+    <section class="free-release-notice" aria-label="Aviso sobre o lançamento gratuito">
+      <div class="free-release-notice__inner section-shell">
+        <span class="free-release-notice__label">AVISO IMPORTANTE</span>
+        <div class="free-release-notice__content">
+          <strong>O DayZombi será gratuito na Play Store</strong>
+          <p>
+            O apoio de <b>R$ 50</b> não compra o jogo final. Ele ajuda o desenvolvimento e libera
+            as versões de teste e os benefícios de apoiador.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Meta posicionada logo abaixo do aviso importante. -->
+    <section class="support-goal section-shell" aria-label="Meta de apoio do DayZombi">
+      <div class="support-goal__top">
+        <div>
+          <span class="support-goal__label">META DO PROJETO</span>
+          <strong id="valor-arrecadado">R$ 0,00</strong>
+          <small>arrecadados</small>
+        </div>
+        <div class="support-goal__target">
+          <span id="percentual-arrecadacao">0% alcançado</span>
+          <strong id="meta-arrecadacao">Meta: R$ 5.000,00</strong>
+        </div>
+      </div>
+
+      <div
+        class="support-goal__bar"
+        id="barra-arrecadacao"
+        role="progressbar"
+        aria-label="Progresso da meta de apoio"
+        aria-valuemin="0"
+        aria-valuemax="5000"
+        aria-valuenow="0"
+      >
+        <span
+          id="preenchimento-arrecadacao"
+          class="support-goal__fill"
+          style="--progress: 0%;"
+        ></span>
+      </div>
+
+      <p class="support-goal__note">
+        Compras do apoio fundador e doações aprovadas entram automaticamente nesta barra.
+      </p>
+
+      <div class="support-goal__recent" aria-label="Apoios recentes ao DayZombi">
+        <div class="support-goal__recent-head">
+          <div>
+            <span>APOIOS RECENTES</span>
+            <small>Contribuições confirmadas</small>
+          </div>
+          <b aria-hidden="true">● AO VIVO</b>
+        </div>
+
+        <div id="apoios-recentes" aria-live="polite">
+          <p class="supporters-empty" id="apoios-recentes-status">
+            Carregando os apoios mais recentes...
+          </p>
+          <ul class="supporters-list oculto" id="apoios-recentes-lista"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero section-shell">
+      <div class="hero__content">
+        <div class="status-pill">
+          <span class="status-pill__dot"></span>
+          TESTES EM DESENVOLVIMENTO
+        </div>
+
+        <p class="eyebrow">SOBREVIVA. TESTE. AJUDE A CONSTRUIR.</p>
+        <h1>Apoie o <span>DayZombi</span></h1>
+
+        <p class="hero__description">
+          Ajude a financiar ferramentas, animações, modelos e cenários. Em troca, entre nas builds
+          de teste e receba benefícios exclusivos de apoiador.
+        </p>
+
+        <div class="hero__actions">
+          <a class="button button--primary" href="#comprar">Apoiar por R$ 50 →</a>
+          <a class="button button--ghost" href="#doar">Fazer uma doação</a>
+        </div>
+
+        <div class="hero__trust">
+          <span>✓ Pagamento pelo Mercado Pago</span>
+          <span>✓ Jogo final gratuito</span>
+          <span>✓ Valor reinvestido no projeto</span>
+        </div>
+      </div>
+
+      <aside class="access-card" id="comprar" aria-label="Apoio fundador DayZombi">
+        <div class="access-card__head">
+          <span>APOIO FUNDADOR</span>
+          <small>ACESSO LIMITADO</small>
+        </div>
+
+        <div class="access-card__game">
+          <img
+            class="access-card__icon"
+            src="https://firebasestorage.googleapis.com/v0/b/dayzozmbi-server.firebasestorage.app/o/Loja%20DayZombi%2Ficone.jpeg?alt=media&token=308c50c4-a734-4c9f-9963-4f7a168c57cb"
+            alt="Ícone do jogo DayZombi"
+          >
+          <div>
+            <small>APOIO + TESTES</small>
+            <h2>DayZombi</h2>
+          </div>
+        </div>
+
+        <div class="access-card__skin">
+          <div>
+            <small>ITEM EXCLUSIVO</small>
+            <strong>Skin Bala Clava de Caveira</strong>
+            <span>Entregue dentro do jogo aos apoiadores.</span>
+          </div>
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/dayzozmbi-server.firebasestorage.app/o/Loja%20DayZombi%2Fskin%20bala%20clava.png?alt=media&token=5bda2114-2480-4a6f-8f22-400cd088604f"
+            alt="Skin Bala Clava de Caveira"
+            loading="lazy"
+          >
+        </div>
+
+        <ul class="access-card__list">
+          <li>Builds de teste e atualizações</li>
+          <li>Grupo exclusivo no Telegram</li>
+          <li>Carta com seu nick e mensagem no jogo</li>
+        </ul>
+
+        <div class="access-card__bottom">
+          <div class="access-card__price">
+            <span>Apoio único</span>
+            <strong><small>R$</small> 50,00</strong>
+          </div>
+
+          <a
+            class="button button--purchase"
+            href="#checkout"
+            data-produto-id="apoio-fundador-50"
+          >
+            Apoiar agora →
+          </a>
+        </div>
+
+        <p class="access-card__secure">▣ Pagamento seguro via Mercado Pago</p>
+      </aside>
+    </section>
+
+    <section class="donation-support section-shell" id="doar" aria-label="Doações menores">
+      <div class="donation-support__copy">
+        <p class="eyebrow">QUER APENAS AJUDAR?</p>
+        <h2>Escolha uma doação</h2>
+        <p>Esses valores ajudam a meta, mas não incluem o pacote de benefícios de R$ 50.</p>
+      </div>
+
+      <div class="donation-support__options">
+        <a class="donation-option" href="#checkout" data-produto-id="doacao-5">
+          <small>DOAR</small>
+          <strong>R$ 5</strong>
+        </a>
+        <a class="donation-option" href="#checkout" data-produto-id="doacao-10">
+          <small>DOAR</small>
+          <strong>R$ 10</strong>
+        </a>
+        <a class="donation-option" href="#checkout" data-produto-id="doacao-20">
+          <small>DOAR</small>
+          <strong>R$ 20</strong>
+        </a>
+      </div>
+    </section>
+
+    <section class="summary section-shell" id="beneficios">
+      <div class="section-heading">
+        <p class="eyebrow">RESUMO DO APOIO</p>
+        <h2>Tudo o que importa, sem enrolação</h2>
+      </div>
+
+      <div class="summary__grid">
+        <article class="summary-card">
+          <span>01</span>
+          <h3>Teste as builds</h3>
+          <p>Receba novas versões e ajude a encontrar erros antes do lançamento.</p>
+        </article>
+
+        <article class="summary-card">
+          <span>02</span>
+          <h3>Entre no Telegram</h3>
+          <p>Acompanhe novidades, envie feedback e converse sobre o desenvolvimento.</p>
+        </article>
+
+        <article class="summary-card summary-card--featured">
+          <span>03</span>
+          <h3>Receba a skin</h3>
+          <p>Ganhe a Skin Bala Clava de Caveira como item exclusivo de apoiador.</p>
+        </article>
+
+        <article class="summary-card">
+          <span>04</span>
+          <h3>Deixe sua marca</h3>
+          <p>Seu nick e uma mensagem aprovada aparecerão em uma carta dentro do jogo.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="faq section-shell" id="duvidas">
+      <div class="section-heading section-heading--left">
+        <p class="eyebrow">DÚVIDAS RÁPIDAS</p>
+        <h2>Antes de apoiar</h2>
+      </div>
+
+      <div class="faq__list">
+        <details open>
+          <summary>O jogo final será pago?</summary>
+          <p>Não. O DayZombi será gratuito na Play Store. O valor atual é um apoio opcional.</p>
+        </details>
+
+        <details>
+          <summary>O que está incluído nos R$ 50?</summary>
+          <p>Builds de teste, Telegram, skin exclusiva e a carta com seu nick e mensagem.</p>
+        </details>
+
+        <details>
+          <summary>As doações menores recebem os benefícios?</summary>
+          <p>Não. R$ 5, R$ 10 e R$ 20 são contribuições simples para a meta do projeto.</p>
+        </details>
+
+        <details>
+          <summary>Posso escrever qualquer mensagem na carta?</summary>
+          <p>Não. A mensagem será analisada antes de entrar no jogo.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="final-cta section-shell">
+      <div>
+        <p class="eyebrow">PARTICIPE DO DESENVOLVIMENTO</p>
+        <h2>Apoie, teste e ajude o jogo a evoluir</h2>
+      </div>
+      <a class="button button--primary" href="#comprar">Ver apoio de R$ 50 →</a>
+    </section>
+  </main>
+
+  <footer class="footer section-shell">
+    <a class="brand brand--footer" href="#inicio">
+      <img
+        class="brand__icon"
+        src="https://firebasestorage.googleapis.com/v0/b/dayzozmbi-server.firebasestorage.app/o/Loja%20DayZombi%2Ficone.jpeg?alt=media&token=308c50c4-a734-4c9f-9963-4f7a168c57cb"
+        alt="Ícone DayZombi"
+      >
+      <span class="brand__text">
+        <strong>DAYZOMBI</strong>
+        <small>APOIO AO PROJETO</small>
+      </span>
+    </a>
+
+    <p>© 2026 DayZombi. Produto em desenvolvimento.</p>
+  </footer>
+
+  <!-- Estrutura mantida para continuar compatível com o app.js atual. -->
+  <div class="checkout-modal" id="checkout-modal" hidden>
+    <div class="checkout-modal__backdrop" data-fechar-checkout></div>
+
+    <section
+      class="checkout-modal__panel"
+      id="checkout"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="checkout-titulo"
+      tabindex="-1"
+    >
+      <button
+        class="checkout-modal__close"
+        type="button"
+        aria-label="Fechar pagamento"
+        data-fechar-checkout
+      >×</button>
+
+      <div class="checkout-modal__head">
+        <span class="checkout-modal__eyebrow" id="checkout-tipo">APOIO DAYZOMBI</span>
+        <h2 id="checkout-titulo">Finalizar apoio</h2>
+        <p id="checkout-descricao">Escolha Pix ou cartão para concluir.</p>
+        <strong id="checkout-valor">R$ 0,00</strong>
+      </div>
+
+      <div class="checkout-modal__content" aria-live="polite">
+        <div class="supporter-name" id="supporter-name-area">
+          <label for="supporter-name-input">Seu Nick / nome no Discord</label>
+          <input
+            id="supporter-name-input"
+            name="supporter-name"
+            type="text"
+            maxlength="36"
+            autocomplete="nickname"
+            placeholder="Ex.: Diniz_07"
+            aria-describedby="supporter-name-help supporter-name-error"
+          >
+          <p id="supporter-name-help">
+            Esse nome ficará público abaixo da meta quando o pagamento for aprovado.
+            Não coloque e-mail, telefone ou outra informação pessoal.
+          </p>
+          <p class="supporter-name__error oculto" id="supporter-name-error"></p>
+        </div>
+
+        <div id="carregando" class="checkout-message">Carregando formas de pagamento...</div>
+        <div id="erro-configuracao" class="checkout-message checkout-message--error oculto"></div>
+        <div id="paymentBrick_container"></div>
+
+        <div id="resultado" class="checkout-result oculto">
+          <h3 id="resultado-titulo">Processando pagamento</h3>
+          <p id="resultado-mensagem"></p>
+
+          <div id="pix-area" class="checkout-pix oculto">
+            <p>Escaneie o QR Code com o aplicativo do seu banco ou copie o código Pix.</p>
+            <img id="pix-qr" alt="QR Code Pix">
+            <label for="pix-codigo">Pix Copia e Cola</label>
+            <textarea id="pix-codigo" readonly></textarea>
+            <button id="copiar-pix" type="button">Copiar código Pix</button>
+            <p id="pix-copiado" class="checkout-copied oculto">Código copiado.</p>
+          </div>
+
+          <p id="detalhes-pagamento" class="checkout-details"></p>
+          <button id="novo-pagamento" class="checkout-secondary" type="button">
+            Fazer novo pagamento
+          </button>
+        </div>
+      </div>
+
+      <p class="checkout-modal__security">
+        Pagamento validado diretamente pelo servidor e pelo Mercado Pago.
+      </p>
+    </section>
+  </div>
+</body>
+</html>
