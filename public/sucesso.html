@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b09">
+  <title>Pagamento aprovado — DayZombi</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="background" aria-hidden="true">
+    <video class="background__video" autoplay muted loop playsinline preload="metadata">
+      <source
+        src="https://firebasestorage.googleapis.com/v0/b/dayzozmbi-server.firebasestorage.app/o/Loja%20DayZombi%2Fvideo%20de%20fundo%20loja.mp4?alt=media&token=8a0406cd-79d0-4c6c-a5b1-fe77aea1ba2a"
+        type="video/mp4"
+      >
+    </video>
+    <div class="background__shade"></div>
+    <div class="background__texture"></div>
+  </div>
+
+  <main class="payment-status-page">
+    <section class="payment-status-card payment-status-card--pending" id="status-card">
+      <div class="payment-status-card__icon" id="status-icon">…</div>
+      <p class="eyebrow">DAYZOMBI</p>
+      <h1 id="titulo">Verificando pagamento</h1>
+      <p id="mensagem">O servidor está confirmando a aprovação diretamente no Mercado Pago.</p>
+      <p class="payment-status-card__details" id="detalhes"></p>
+
+      <div class="payment-status-card__gratitude oculto" id="gratidao">
+        <strong id="gratidao-titulo">Obrigado por apoiar o DayZombi.</strong>
+        <p id="texto-gratidao"></p>
+      </div>
+
+      <div class="payment-status-card__actions">
+        <a class="button button--primary oculto" id="meu-acesso-link" href="/?abrir-acesso=1">
+          Abrir meu acesso aos testes →
+        </a>
+        <a class="button button--ghost" href="/">Voltar à loja</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    const params = new URLSearchParams(location.search);
+    const paymentId = params.get("payment_id") || params.get("collection_id");
+    const card = document.querySelector("#status-card");
+    const icon = document.querySelector("#status-icon");
+    const titulo = document.querySelector("#titulo");
+    const mensagem = document.querySelector("#mensagem");
+    const detalhes = document.querySelector("#detalhes");
+    const gratidao = document.querySelector("#gratidao");
+    const gratidaoTitulo = document.querySelector("#gratidao-titulo");
+    const textoGratidao = document.querySelector("#texto-gratidao");
+    const meuAcessoLink = document.querySelector("#meu-acesso-link");
+
+    verificar();
+
+    async function verificar() {
+      if (!paymentId) {
+        mostrarErro("Pagamento não identificado", "A URL não trouxe o identificador do pagamento.");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/verificar-pagamento?payment_id=${encodeURIComponent(paymentId)}`,
+          { cache: "no-store" }
+        );
+        const data = await response.json();
+
+        if (data.aprovado) {
+          mostrarAprovado(data);
+          return;
+        }
+
+        if (["pending", "in_process", "indisponivel"].includes(data.status)) {
+          titulo.textContent = "Aguardando confirmação";
+          mensagem.textContent = data.mensagem || data.erro || "O pagamento ainda está sendo processado.";
+          detalhes.textContent = `Pagamento: ${paymentId}`;
+          window.setTimeout(verificar, 3000);
+          return;
+        }
+
+        mostrarErro("Pagamento não liberado", data.mensagem || data.erro || "O pagamento não foi aprovado.");
+      } catch {
+        titulo.textContent = "Tentando novamente";
+        mensagem.textContent = "O servidor está temporariamente indisponível.";
+        window.setTimeout(verificar, 3000);
+      }
+    }
+
+    function mostrarAprovado(data) {
+      card.className = "payment-status-card";
+      icon.textContent = "✓";
+      titulo.textContent = "Pagamento aprovado";
+      mensagem.textContent = data.mensagem || "Seu pagamento foi confirmado.";
+      detalhes.textContent = `Pagamento: ${data.pagamentoId} — Valor: ${formatarMoeda(data.valor)}`;
+      gratidao.classList.remove("oculto");
+
+      if (data.nomeApoiador) {
+        gratidaoTitulo.textContent = `Obrigado pelo apoio, ${data.nomeApoiador}.`;
+      }
+
+      if (data.tipoApoio === "compra") {
+        textoGratidao.textContent = data.acessoVinculado
+          ? "Sua compra foi vinculada à conta Google usada no pagamento. A chave de acesso já foi criada no Firebase."
+          : "Seu pagamento foi aprovado. Volte à loja com a mesma conta Google para consultar seu acesso.";
+        meuAcessoLink.classList.remove("oculto");
+      } else {
+        textoGratidao.textContent =
+          "Sua doação foi adicionada à arrecadação do projeto. Obrigado pela contribuição.";
+      }
+    }
+
+    function mostrarErro(textoTitulo, textoMensagem) {
+      card.className = "payment-status-card payment-status-card--error";
+      icon.textContent = "!";
+      titulo.textContent = textoTitulo;
+      mensagem.textContent = textoMensagem || "Pagamento não confirmado.";
+      detalhes.textContent = paymentId ? `Pagamento: ${paymentId}` : "";
+    }
+
+    function formatarMoeda(valor) {
+      return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      }).format(Number(valor) || 0);
+    }
+  </script>
+</body>
+</html>
