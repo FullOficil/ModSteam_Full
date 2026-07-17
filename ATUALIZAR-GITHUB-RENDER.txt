@@ -1,0 +1,74 @@
+ATUALIZAÇÃO — CONTA GOOGLE + CHAVE DE ACESSO DAYZOMBI
+
+O QUE ESTA VERSÃO FAZ
+- Mantém o layout compacto aprovado.
+- Adiciona “Entrar com Google” ao lado da logo DAYZOMBI.
+- A compra de R$ 50 exige login com Google e fica vinculada ao UID da conta.
+- Ao entrar com a mesma conta em outro navegador ou aparelho, o site reconhece a compra.
+- Depois da aprovação, o Firebase cria uma chave aleatória no nó:
+  LojaDayZombi > Chaves de Acessos
+- No topo aparece “ACESSO AOS TESTES JÁ COMPRADO”.
+- Ao clicar, abre uma tela com Telegram, download e chave de acesso.
+- A chave é de uso único e pode ser ativada uma vez pela rota /api/ativar-chave.
+- Doações de R$ 5, R$ 10 e R$ 20 continuam funcionando normalmente.
+
+IMPORTANTE SOBRE OUTRO NAVEGADOR
+O site não identifica uma pessoa anonimamente entre navegadores. Ela precisa clicar em
+“Entrar com Google” e usar a MESMA conta usada na compra. O Firebase então recupera o acesso.
+
+ANTES DO DEPLOY — FIREBASE AUTHENTICATION
+1. Abra o Firebase Console do projeto dayzozmbi-server.
+2. Vá em Authentication > Método de login.
+3. Ative o provedor Google.
+4. Em Authentication > Configurações > Domínios autorizados, adicione:
+   loja-dayzombi.onrender.com
+
+GITHUB
+1. Extraia este ZIP.
+2. Substitua todos os arquivos do repositório pelos arquivos desta pasta.
+3. Não envie .env, node_modules nem a chave privada do Firebase.
+4. Faça commit e push.
+
+RENDER
+Build Command: npm ci
+Start Command: npm start
+
+Mantenha as variáveis atuais:
+- MP_ACCESS_TOKEN
+- MP_PUBLIC_KEY
+- MP_WEBHOOK_SECRET
+- NODE_VERSION=22
+- PUBLIC_URL=https://loja-dayzombi.onrender.com
+- FIREBASE_DATABASE_URL=https://dayzozmbi-server-default-rtdb.firebaseio.com
+- FIREBASE_SERVICE_ACCOUNT_JSON
+
+Adicione o link da build:
+- GAME_DOWNLOAD_URL=https://seu-link-de-download
+
+Opcional:
+- TELEGRAM_URL=https://t.me/+CyDPE-Hbq00wOGRh
+
+Depois use “Clear build cache & deploy”.
+
+ESTRUTURA CRIADA NO FIREBASE
+LojaDayZombi
+├── Doações
+├── ApoiosPublicos
+├── PagamentosProcessados
+├── Usuarios
+│   └── UID_GOOGLE
+│       └── AcessoTeste
+└── Chaves de Acessos
+    └── CHAVE-PLAYER-TESTE-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX
+
+TESTE
+1. Ative o login Google no Firebase.
+2. Entre no site com uma conta Google.
+3. Compre o apoio de R$ 50.
+4. Aguarde a aprovação.
+5. Volte à loja e clique em “ACESSO AOS TESTES JÁ COMPRADO”.
+6. Abra a mesma loja em outro navegador, entre com a mesma conta e confira o acesso.
+
+COMPRAS ANTIGAS
+Compras realizadas antes desta versão não possuem UID Google nos metadados e não são
+vinculadas automaticamente. O vínculo persistente vale para compras feitas após este deploy.
